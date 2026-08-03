@@ -1,39 +1,37 @@
 # Hunt Loadout Generator
 
-> Gerador aleatório de loadouts para **Hunt: Showdown**, feito por **Tiflow**.
+> Random loadout generator for **Hunt: Showdown**, created by **Tiflow**.
+> Don't like the site? Then make one yourself and share it with your friends.
 
 [![Live](https://img.shields.io/badge/experimenta-o%20site-2ea44f?style=for-the-badge)](https://thetiflow.github.io/HuntLoadout/)
 
-Cansado de usar sempre o mesmo equipamento? Este gerador cria combinações aleatórias de armas, ferramentas e consumíveis, respeitando as tuas preferências e o teu orçamento.
+Tired of always using the same loadout? This generator creates random combinations of weapons, tools, and consumables, respecting your preferences, budget, and Bloodline Rank.
 
-## 🎲 O que faz
+## 🎲 What it does
 
-- Gera uma arma principal, secundária e kit de ferramentas/consumíveis aleatórios
-- Respeita o **rank de Bloodline** e o **limite de preço** (em dólares)
-- Respeita as opções que escolheres:
-  - ✅ Sem munição especial
-  - ✅ Só variantes base
-  - ✅ Forçar Med Kit
-  - ✅ Forçar arma corpo-a-corpo
-  - ✅ Quartermaster (+1 capacidade)
+- Generates a random primary weapon, secondary weapon, and tool/consumable kit
+- Respects **Bloodline rank** and **price limit** (in dollars)
+- Respects your chosen options:
+  - ✅ No special ammo
+  - ✅ Base variants only
+  - ✅ Force Med Kit
+  - ✅ Quartermaster (+1 capacity)
 
-## 🚀 Como usar
+## 🚀 How to use
 
-Abre o site em **https://thetiflow.github.io/HuntLoadout/** e carrega no botão **🎲 Generate Loadout**. Ajusta o rank e o orçamento nas opções para teres loadouts que se adequam ao teu progresso.
+Open the site at **https://thetiflow.github.io/HuntLoadout/** and click the **🎲 Generate Loadout** button. Adjust the rank and budget in the options to get loadouts that suit your progress.
 
-## 🛠️ Tecnologias
+## 🛠️ Nerd things:
 
-- HTML + CSS + JavaScript puro (sem dependências)
-- Funciona 100% no browser, sem servidor
+- HTML + CSS + JavaScript (no dependencies)
+- Runs 100% in the browser, without a server
 
-## 📦 Ficheiros
+## 📦 Files
 
-| Ficheiro      | Descrição                          |
+| File          | Description                        |
 |---------------|------------------------------------|
-| `index.html`  | Estrutura da página                |
-| `style.css`   | Estilos e layout                   |
-| `data.js`     | Base de dados de armas e itens     |
-| `app.js`      | Lógica do gerador                  |
-| `img/`        | Imagens de armas e consumíveis     |
-
-Feito com ❤️ por **Tiflow** para a comunidade de *Hunt: Showdown*.
+| `index.html`  | Page structure                     |
+| `style.css`   | Styles and layout                  |
+| `data.js`     | Weapons and items database         |
+| `app.js`      | Generator logic                    |
+| `img/`        | Images of weapons and consumables  |
