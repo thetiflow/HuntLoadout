@@ -55,11 +55,45 @@ body {
   gap: 20px;
 }
 
-.opcoes-card, .resultado {
+.opcoes-card, .resultado, .challenge-card {
   background: var(--card);
   border: 1px solid var(--borda);
   border-radius: 14px;
   padding: 20px;
+}
+
+.challenge-card { margin-top: 0; }
+
+.challenge-titulo {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--bordo-claro);
+  border-bottom: 1px solid var(--borda);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.challenge-lista {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.challenge-lista li {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--creme);
+  padding-left: 22px;
+  position: relative;
+}
+
+.challenge-lista li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--bordo-claro);
 }
 
 .opcoes-grelha {
