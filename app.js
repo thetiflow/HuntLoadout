@@ -29,6 +29,164 @@
     consumivel: { etiqueta: "Consumable", tipo: "consumivel" }
   };
 
+  var NOMES_LOADOUT = [
+    "The Iron Promise", "Sinner's Bargain", "Bury Them Quiet", "The Long Night",
+    "Gunpowder Psalm", "Mud & Blood", "Last Candle", "The Bounty Road",
+    "Grave Matter", "Torn Contract", "Devil's Dozen", "Whiskey & Wax",
+    "Burning Ledger", "The Reckoning", "Salt & Smoke", "The 1896 Gospel"
+  ];
+
+  var FRASES_DESTINO = [
+    "The bayou decides. You simply carry.",
+    "Fortune favors the prepared — and the paranoid.",
+    "Every contract is a promise written in gunpowder.",
+    "Darkness is just the hunt taking cover.",
+    "Carry light, or carry everything twice.",
+    "The Devil deals, but you pick the cards.",
+    "Some nights the swamp feeds on hunters.",
+    "Three shots left is a whole plan."
+  ];
+
+  function destinoAtualizar() {
+    var elNome = document.getElementById("destino-nome");
+    var elFrase = document.getElementById("destino-frase");
+    if (elNome) elNome.textContent = NOMES_LOADOUT[Math.floor(Math.random() * NOMES_LOADOUT.length)];
+    if (elFrase) elFrase.textContent = FRASES_DESTINO[Math.floor(Math.random() * FRASES_DESTINO.length)];
+  }
+
+  var audioCtx = null;
+  var ruidoBuf = null;
+  var audioPronto = false;
+  var somLigado = true;
+
+  document.addEventListener("click", function () { audioPronto = true; }, { capture: true, once: true });
+
+  function ligarBotaoSom() {
+    try {
+      var guardado = localStorage.getItem("hunt_som");
+      if (guardado === "0") somLigado = false;
+    } catch (e) {}
+    aplicarSom();
+    var btn = document.getElementById("btn-som");
+    if (btn) btn.addEventListener("click", function () {
+      somLigado = !somLigado;
+      try { localStorage.setItem("hunt_som", somLigado ? "1" : "0"); } catch (e) {}
+      aplicarSom();
+    });
+  }
+
+  function aplicarSom() {
+    var btn = document.getElementById("btn-som");
+    if (btn) btn.setAttribute("aria-label", somLigado ? "Mute sound" : "Enable sound");
+    if (somLigado) document.body.classList.remove("som-off");
+    else document.body.classList.add("som-off");
+  }
+
+  function tocarSelo() {
+    try {
+      if (!audioPronto || !somLigado) return;
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!audioCtx) {
+        audioCtx = new AC();
+        var len = audioCtx.sampleRate;
+        ruidoBuf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+        var dados = ruidoBuf.getChannelData(0);
+        for (var i = 0; i < len; i++) dados[i] = Math.random() * 2 - 1;
+      }
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume().then(function () { tocarSelo(); });
+        return;
+      }
+      if (audioCtx.state !== "running" || !ruidoBuf) return;
+      var agora = audioCtx.currentTime;
+
+      var thud = audioCtx.createBufferSource();
+      thud.buffer = ruidoBuf;
+      var filtroThud = audioCtx.createBiquadFilter();
+      filtroThud.type = "lowpass";
+      filtroThud.frequency.setValueAtTime(900, agora);
+      filtroThud.frequency.exponentialRampToValueAtTime(120, agora + 0.09);
+      var ganhoThud = audioCtx.createGain();
+      ganhoThud.gain.setValueAtTime(0.0001, agora);
+      ganhoThud.gain.exponentialRampToValueAtTime(0.7, agora + 0.008);
+      ganhoThud.gain.exponentialRampToValueAtTime(0.0001, agora + 0.12);
+      thud.connect(filtroThud).connect(ganhoThud).connect(audioCtx.destination);
+      thud.start(agora);
+      thud.stop(agora + 0.15);
+
+      var osc = audioCtx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(160, agora);
+      osc.frequency.exponentialRampToValueAtTime(55, agora + 0.09);
+      var ganhoOsc = audioCtx.createGain();
+      ganhoOsc.gain.setValueAtTime(0.0001, agora);
+      ganhoOsc.gain.exponentialRampToValueAtTime(0.5, agora + 0.008);
+      ganhoOsc.gain.exponentialRampToValueAtTime(0.0001, agora + 0.11);
+      osc.connect(ganhoOsc).connect(audioCtx.destination);
+      osc.start(agora);
+      osc.stop(agora + 0.12);
+
+      for (var j = 0; j < 5; j++) {
+        var atraso = 0.03 + Math.random() * 0.08;
+        var crack = audioCtx.createBufferSource();
+        crack.buffer = ruidoBuf;
+        var filtroCrack = audioCtx.createBiquadFilter();
+        filtroCrack.type = "bandpass";
+        filtroCrack.frequency.value = 1800 + Math.random() * 2500;
+        filtroCrack.Q.value = 4;
+        var ganhoCrack = audioCtx.createGain();
+        ganhoCrack.gain.setValueAtTime(0.0001, agora + atraso);
+        ganhoCrack.gain.exponentialRampToValueAtTime(0.12 + Math.random() * 0.1, agora + atraso + 0.005);
+        ganhoCrack.gain.exponentialRampToValueAtTime(0.0001, agora + atraso + 0.04 + Math.random() * 0.05);
+        crack.connect(filtroCrack).connect(ganhoCrack).connect(audioCtx.destination);
+        crack.start(agora + atraso);
+        crack.stop(agora + atraso + 0.1);
+      }
+    } catch (e) {}
+  }
+
+  function tocarRevelacao() {
+    try {
+      if (!audioPronto || !somLigado || !audioCtx) return;
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume().then(function () { tocarRevelacao(); });
+        return;
+      }
+      if (audioCtx.state !== "running") return;
+      var agora = audioCtx.currentTime;
+      var notas = [
+        { f: 110,    t: 0,    g: 0.13, d: 0.6 },
+        { f: 138.59, t: 0.13, g: 0.13, d: 0.6 },
+        { f: 164.81, t: 0.26, g: 0.13, d: 0.6 },
+        { f: 220,    t: 0.39, g: 0.21, d: 1.0 }
+      ];
+      notas.forEach(function (n) {
+        var o = audioCtx.createOscillator();
+        o.type = "triangle";
+        o.frequency.value = n.f;
+        var g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.0001, agora + n.t);
+        g.gain.exponentialRampToValueAtTime(n.g, agora + n.t + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, agora + n.t + n.d);
+        o.connect(g).connect(audioCtx.destination);
+        o.start(agora + n.t);
+        o.stop(agora + n.t + n.d + 0.05);
+
+        var o2 = audioCtx.createOscillator();
+        o2.type = "sine";
+        o2.frequency.value = n.f * 2;
+        var g2 = audioCtx.createGain();
+        g2.gain.setValueAtTime(0.0001, agora + n.t);
+        g2.gain.exponentialRampToValueAtTime(n.g * 0.3, agora + n.t + 0.015);
+        g2.gain.exponentialRampToValueAtTime(0.0001, agora + n.t + n.d * 0.7);
+        o2.connect(g2).connect(audioCtx.destination);
+        o2.start(agora + n.t);
+        o2.stop(agora + n.t + n.d * 0.7 + 0.05);
+      });
+    } catch (e) {}
+  }
+
   function capacidadeTotal() {
     return ESTADO.opcoes.quartermaster ? 6 : 5;
   }
@@ -304,15 +462,19 @@
       if (TIPOS_SLOT[s.tipo].tipo === "ferramenta") posFerramenta++;
     });
     renderizar();
+    destinoAtualizar();
+    tocarSelo();
     if (window.HUNT_NO_ANIM) {
-      bloquearControles(false);
-      ESTADO.animando = false;
+      finalizarGeracao();
       return;
     }
-    animarReveal(function () {
-      bloquearControles(false);
-      ESTADO.animando = false;
-    });
+    animarReveal(finalizarGeracao);
+  }
+
+  function finalizarGeracao() {
+    bloquearControles(false);
+    ESTADO.animando = false;
+    tocarRevelacao();
   }
 
   function posFerramentaDoIndice(indice) {
@@ -625,6 +787,7 @@
 
     document.getElementById("btn-gerar").addEventListener("click", gerarTudo);
     document.getElementById("btn-fechar-variantes").addEventListener("click", function () { fecharModal("variantes-modal"); });
+    ligarBotaoSom();
 
     var btnSettings = document.getElementById("btn-settings");
     var painelSettings = document.getElementById("settings-painel");

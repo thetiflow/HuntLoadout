@@ -1,21 +1,3 @@
-/* ============================================================
-   LOADOUT GENERATOR DATA — HUNT: SHOWDOWN
-   Edit ONLY this file to change weapons/tools/prices.
-
-   Structure of an item:
-   {
-     id:      "mosin",            // unique id
-     nome:    "Mosin-Nagant M1891", // shown name
-     img:     "mosin.jpg",         // file in img/ (leave "" for no image)
-     tamanho: 4,                   // weapon size 1-5 (2026 slot system)
-     preco:   219,                 // price in dollars
-     desbloqueio: 1,               // required bloodline rank
-     raro:    false,               // true = rare weapon (stronger)
-     municao: "compact",           // ammo family: compact/medium/long/speciallong/shell/nitro/dolch/bolt/arrow/lance/shredder
-     municoes: ["Standard"],          // accepted ammo types
-     variantes: []                 // variant ids (for the chain button)
-   }
-   ============================================================ */
 window.HUNT_DATA = {
   armas: [
     // ----- RIFLES -----
