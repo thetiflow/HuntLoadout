@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hunt Loadout · by Tiflow</title>
+  <link rel="stylesheet" href="style.css?v=20260803">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-conteudo">
+      <h1 class="logo">Generator <span>Loadout</span></h1>
+      <p class="subtitulo">made by <b>Tiflow</b></p>
+      <span class="topo-update">Update to Hunt Showdown: Road to Hell Event Survey</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="opcoes-card">
+      <div class="opcoes-topo">
+        <div class="opcoes-topo-esq">
+          <button class="btn-settings" id="btn-settings">⚙ Options</button>
+          <label class="rank-control" for="op-rank">Bloodline rank</label>
+          <input type="number" class="rank-input" id="op-rank" min="1" max="100" value="1">
+          <label class="rank-control" for="op-preco">Price limit</label>
+          <input type="number" class="rank-input" id="op-preco" min="0" max="4000" step="50" value="1200">
+        </div>
+        <button class="btn-gerar" id="btn-gerar">🎲 Generate Loadout</button>
+        <div class="resumo-preco">
+          <span class="custo" id="custo">Within limit</span>
+          <span class="total" id="total">$0</span>
+        </div>
+      </div>
+
+      <div class="settings-painel" id="settings-painel" hidden>
+        <div class="opcoes-grelha">
+          <label class="opcao"><input type="checkbox" id="op-muni"> No custom ammo</label>
+          <label class="opcao"><input type="checkbox" id="op-sobase"> Only base variants</label>
+          <label class="opcao"><input type="checkbox" id="op-medkit" checked> Force Med Kit</label>
+          <label class="opcao"><input type="checkbox" id="op-melee-tools"> Force melee</label>
+          <label class="opcao"><input type="checkbox" id="op-qm"> Quartermaster (+1 capacity)</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="resultado">
+      <div class="grupo" id="grupo-armas">
+        <h3 class="grupo-titulo">Weapons</h3>
+        <div class="slots slots-armas" id="slots-armas"></div>
+      </div>
+      <div class="grupo" id="grupo-fc">
+        <h3 class="grupo-titulo">Tools &amp; Consumables</h3>
+        <div class="slots slots-fc" id="slots-fc"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="variantes-modal" style="display:none">
+    <div class="modal-caixa">
+      <div class="modal-topo">
+        <h3>Variants</h3>
+        <button class="btn-fechar" id="btn-fechar-variantes">✕</button>
+      </div>
+      <div class="variantes-lista" id="variantes-lista"></div>
+    </div>
+  </div>
+
+  <script src="data.js?v=20260803"></script>
+  <script src="app.js?v=20260803"></script>
+</body>
+</html>

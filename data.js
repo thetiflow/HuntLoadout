@@ -1,0 +1,284 @@
+/* ============================================================
+   LOADOUT GENERATOR DATA — HUNT: SHOWDOWN
+   Edit ONLY this file to change weapons/tools/prices.
+
+   Structure of an item:
+   {
+     id:      "mosin",            // unique id
+     nome:    "Mosin-Nagant M1891", // shown name
+     img:     "mosin.jpg",         // file in img/ (leave "" for no image)
+     tamanho: 4,                   // weapon size 1-5 (2026 slot system)
+     preco:   219,                 // price in dollars
+     desbloqueio: 1,               // required bloodline rank
+     raro:    false,               // true = rare weapon (stronger)
+     municao: "compact",           // ammo family: compact/medium/long/speciallong/shell/nitro/dolch/bolt/arrow/lance/shredder
+     municoes: ["Standard"],          // accepted ammo types
+     variantes: []                 // variant ids (for the chain button)
+   }
+   ============================================================ */
+window.HUNT_DATA = {
+  armas: [
+    // ----- RIFLES -----
+    { id: "springfield",      nome: "Springfield 1866",        img: "weapons/medium ammo/springfield 1866.png", tamanho: 4, preco: 74,  desbloqueio: 1,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","Explosive Ammo","High Velocity Ammo","Poison Ammo"], variantes: ["springfield_bay","springfield_mark","springfield_sho","springfield_striker","springfield_bull"] },
+    { id: "springfield_bay",  nome: "Springfield 1866 Bayonet", img: "weapons/medium ammo/springfield 1866 bayonet.png", tamanho: 4, preco: 48,  desbloqueio: 1,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","Explosive Ammo","High Velocity Ammo","Poison Ammo"], variantes: [] },
+    { id: "springfield_mark", nome: "Springfield 1866 Marksman", img: "weapons/medium ammo/springfield 1866 marksman.png", tamanho: 4, preco: 42,  desbloqueio: 1,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","Explosive Ammo","High Velocity Ammo","Poison Ammo"], variantes: [] },
+    { id: "springfield_sho",  nome: "Springfield 1866 Shorty", img: "weapons/medium ammo/springfield 1866 shorty.png", tamanho: 2, preco: 33,  desbloqueio: 1,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","Explosive Ammo","High Velocity Ammo","Poison Ammo"], variantes: [] },
+    { id: "springfield_striker", nome: "Springfield 1866 Striker", img: "weapons/medium ammo/springfield 1866 striker.png", tamanho: 2, preco: 43,  desbloqueio: 1,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","Explosive Ammo","High Velocity Ammo","Poison Ammo"], variantes: [] },
+    { id: "springfield_bull", nome: "Springfield 1866 Bullseye", img: "weapons/medium ammo/springfield 1866 bullseye.png", tamanho: 2, preco: 35,  desbloqueio: 1,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","Explosive Ammo","High Velocity Ammo","Poison Ammo"], variantes: [] },
+    { id: "vetterli",         nome: "Vetterli 71 Karabiner",   img: "weapons/medium ammo/vetterli 71.png", tamanho: 3, preco: 122, desbloqueio: 8,  raro: false, municao: "medium", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: ["vetterli_dead","vetterli_mark","vetterli_bay","vetterli_sil","vetterli_cyc"] },
+    { id: "vetterli_dead",    nome: "Vetterli 71 Deadeye",      img: "weapons/medium ammo/vetterli 71 deadeye.png", tamanho: 3, preco: 110, desbloqueio: 8,  raro: false, municao: "medium", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "vetterli_mark",    nome: "Vetterli 71 Marksman",     img: "weapons/medium ammo/vetterli 71 marksman.png", tamanho: 3, preco: 116, desbloqueio: 8,  raro: false, municao: "medium", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "vetterli_bay",     nome: "Vetterli 71 Bayonet",      img: "weapons/medium ammo/vetterli 71 bayonet.png", tamanho: 3, preco: 115, desbloqueio: 8,  raro: false, municao: "medium", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "vetterli_sil",     nome: "Vetterli 71 Silencer",     img: "weapons/medium ammo/vetterli 71 silencer.png", tamanho: 3, preco: 150, desbloqueio: 8,  raro: false, municao: "medium", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "vetterli_cyc",     nome: "Vetterli 71 Cyclone",      img: "weapons/medium ammo/vetterli 71 cyclone.png", tamanho: 4, preco: 280, desbloqueio: 8,  raro: false, municao: "medium", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "martini",          nome: "Martini-Henry IC1",        img: "weapons/long ammo/martini-henry.png", tamanho: 4, preco: 113, desbloqueio: 10, raro: false, municao: "long", municoes: ["Standard","Explosive Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo"], variantes: ["martini_dead","martini_rip","martini_mark","martini_iron"] },
+    { id: "martini_dead",     nome: "Martini-Henry Deadeye",    img: "weapons/long ammo/martini-henry deadeye.png", tamanho: 4, preco: 128, desbloqueio: 10, raro: false, municao: "long", municoes: ["Standard","Explosive Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo"], variantes: [] },
+    { id: "martini_rip",      nome: "Martini-Henry Riposte",    img: "weapons/long ammo/martini-henry riposte.png", tamanho: 4, preco: 132, desbloqueio: 10, raro: false, municao: "long", municoes: ["Standard","Explosive Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo"], variantes: [] },
+    { id: "martini_mark",     nome: "Martini-Henry Marksman",   img: "weapons/long ammo/martini-henry marksman.png", tamanho: 4, preco: 134, desbloqueio: 10, raro: false, municao: "long", municoes: ["Standard","Explosive Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo"], variantes: [] },
+    { id: "martini_iron",     nome: "Martini-Henry Ironside",   img: "weapons/long ammo/martini-henry ironside.png", tamanho: 4, preco: 159, desbloqueio: 10, raro: false, municao: "long", municoes: ["Standard","Explosive Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo"], variantes: [] },
+    { id: "sparks",           nome: "Sparks LRR",               img: "weapons/long ammo/sparks.png", tamanho: 4, preco: 159, desbloqueio: 9,  raro: false, municao: "long", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: ["sparks_pis","sparks_sil","sparks_snip","sparks_pis_sil"] },
+    { id: "sparks_pis",       nome: "Sparks Pistol",            img: "weapons/long ammo/sparks pistol.png", tamanho: 1, preco: 155, desbloqueio: 9,  raro: false, municao: "long", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "sparks_sil",       nome: "Sparks Silencer",          img: "weapons/long ammo/sparks silencer.png", tamanho: 4, preco: 150, desbloqueio: 9,  raro: false, municao: "long", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "sparks_snip",      nome: "Sparks Sniper",            img: "weapons/long ammo/sparks sniper.png", tamanho: 4, preco: 150, desbloqueio: 9,  raro: false, municao: "long", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "sparks_pis_sil",   nome: "Sparks Pistol Silencer",   img: "weapons/long ammo/sparks pistol silencer.png", tamanho: 1, preco: 178, desbloqueio: 9,  raro: false, municao: "long", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "lebel",            nome: "Lebel 1886",               img: "weapons/special long ammo/lebel 1886.png", tamanho: 4, preco: 262, desbloqueio: 28, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: ["lebel_aper","lebel_talon","lebel_mark"] },
+    { id: "lebel_aper",       nome: "Lebel 1886 Aperture",      img: "weapons/special long ammo/lebel 1886 aperture.png", tamanho: 4, preco: 417, desbloqueio: 28, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: [] },
+    { id: "lebel_talon",      nome: "Lebel 1886 Talon",         img: "weapons/special long ammo/lebel 1886 talon.png", tamanho: 4, preco: 407, desbloqueio: 28, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: [] },
+    { id: "lebel_mark",       nome: "Lebel 1886 Marksman",      img: "weapons/special long ammo/lebel 1886 marksman.png", tamanho: 4, preco: 437, desbloqueio: 28, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: [] },
+    { id: "mosin",            nome: "Mosin-Nagant M1891",       img: "weapons/special long ammo/mosin-nagant.png", tamanho: 4, preco: 219, desbloqueio: 33, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: ["mosin_bay","mosin_snip","avtomat"] },
+    { id: "mosin_bay",        nome: "Mosin-Nagant Bayonet",     img: "weapons/special long ammo/mosin-nagant bayonet.png", tamanho: 4, preco: 630, desbloqueio: 33, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: [] },
+    { id: "mosin_snip",       nome: "Mosin-Nagant Sniper",      img: "weapons/special long ammo/mosin-nagant sniper.png", tamanho: 4, preco: 713, desbloqueio: 33, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: [] },
+    { id: "berthier",         nome: "Berthier 1892",            img: "weapons/special long ammo/berthier 1892.png", tamanho: 3, preco: 182, desbloqueio: 26, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: ["berthier_rip","berthier_dead","berthier_mark"] },
+    { id: "berthier_rip",     nome: "Berthier 1892 Riposte",    img: "weapons/special long ammo/berthier 1892 riposte.png", tamanho: 3, preco: 390, desbloqueio: 26, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: [] },
+    { id: "berthier_dead",    nome: "Berthier 1892 Deadeye",    img: "weapons/special long ammo/berthier 1892 deadeye.png", tamanho: 3, preco: 397, desbloqueio: 26, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: [] },
+    { id: "berthier_mark",    nome: "Berthier 1892 Marksman",   img: "weapons/special long ammo/berthier 1892 marksman.png", tamanho: 3, preco: 413, desbloqueio: 26, raro: false, municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: [] },
+    { id: "krag",             nome: "Krag Jørgensen",           img: "weapons/special long ammo/krag.png", tamanho: 4, preco: 255, desbloqueio: 31, raro: false, municao: "speciallong", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: ["krag_bay","krag_snip","krag_sil"] },
+    { id: "krag_bay",         nome: "Krag Bayonet",             img: "weapons/special long ammo/krag bayonet.png", tamanho: 4, preco: 460, desbloqueio: 31, raro: false, municao: "speciallong", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "krag_snip",        nome: "Krag Sniper",              img: "weapons/special long ammo/krag sniper.png", tamanho: 4, preco: 517, desbloqueio: 31, raro: false, municao: "speciallong", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "krag_sil",         nome: "Krag Silencer",            img: "weapons/special long ammo/krag silencer.png", tamanho: 4, preco: 517, desbloqueio: 31, raro: false, municao: "speciallong", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    // ----- REPEATING RIFLES -----
+    { id: "winfield",         nome: "Winfield 1873",            img: "weapons/compacto ammo/frontier 73c.png", tamanho: 3, preco: 74,  desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: ["winfield_sil","winfield_mark"] },
+    { id: "winfield_sil",     nome: "Frontier 73C Silencer",     img: "weapons/compacto ammo/frontier 73c silencer.png", tamanho: 3, preco: 55,  desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "winfield_mark",    nome: "Frontier 73C Marksman",     img: "weapons/compacto ammo/frontier 73c marksman.png", tamanho: 3, preco: 45,  desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "centennial",       nome: "Centennial",               img: "weapons/medium ammo/centennial.png", tamanho: 4, preco: 128, desbloqueio: 16, raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: ["centennial_sho","centennial_snip","centennial_sho_sil","centennial_trau","centennial_poin"] },
+    { id: "centennial_sho",   nome: "Centennial Shorty",        img: "weapons/medium ammo/centennial shorty.png", tamanho: 2, preco: 103, desbloqueio: 16, raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "centennial_snip",  nome: "Centennial Sniper",        img: "weapons/medium ammo/centennial sniper.png", tamanho: 4, preco: 181, desbloqueio: 16, raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "centennial_sho_sil", nome: "Centennial Shorty Silencer", img: "weapons/medium ammo/centennial shorty silencer.png", tamanho: 2, preco: 137, desbloqueio: 16, raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "centennial_trau",  nome: "Centennial Trauma",        img: "weapons/medium ammo/centennial trauma.png", tamanho: 4, preco: 167, desbloqueio: 16, raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "centennial_poin",  nome: "Centennial Pointman",      img: "weapons/medium ammo/centennial pointman.png", tamanho: 2, preco: 114, desbloqueio: 16, raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "ranger",           nome: "Winfield Ranger",          img: "weapons/compacto ammo/ranger 73.png", tamanho: 4, preco: 86,  desbloqueio: 4,  raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: ["ranger_aper","ranger_tal","ranger_swif"] },
+    { id: "ranger_aper",      nome: "Ranger 73 Aperture",       img: "weapons/compacto ammo/ranger 73 aperture.png", tamanho: 4, preco: 79,  desbloqueio: 4,  raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "ranger_tal",       nome: "Ranger 73 Talon",          img: "weapons/compacto ammo/ranger 73 talon.png", tamanho: 4, preco: 85,  desbloqueio: 4,  raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "ranger_swif",      nome: "Ranger 73 Swift",          img: "weapons/compacto ammo/ranger 73 swift.png", tamanho: 4, preco: 128, desbloqueio: 4,  raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    // ----- SHOTGUNS -----
+    { id: "romero",           nome: "Romero 77",                img: "weapons/shotguns shells/romero 77.png", tamanho: 4, preco: 64,  desbloqueio: 1,  raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Penny Shot Ammo","Slug","Starshell"], variantes: ["romero_sho","romero_tal","romero_hat","romero_al"] },
+    { id: "romero_sho",       nome: "Romero 77 Shorty",         img: "weapons/shotguns shells/romero 77 shorty.png", tamanho: 2, preco: 46,  desbloqueio: 1,  raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Penny Shot Ammo","Slug","Starshell"], variantes: [] },
+    { id: "romero_tal",       nome: "Romero 77 Talon",          img: "weapons/shotguns shells/romero 77 talon.png", tamanho: 4, preco: 76,  desbloqueio: 1,  raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Penny Shot Ammo","Slug","Starshell"], variantes: [] },
+    { id: "romero_hat",       nome: "Romero 77 Hatchet",        img: "weapons/shotguns shells/romero 77 hatchet.png", tamanho: 2, preco: 56,  desbloqueio: 1,  raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Penny Shot Ammo","Slug","Starshell"], variantes: [] },
+    { id: "romero_al",        nome: "Romero 77 Alamo",          img: "weapons/shotguns shells/romero 77 alamo.png", tamanho: 4, preco: 98,  desbloqueio: 1,  raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Penny Shot Ammo","Slug","Starshell"], variantes: [] },
+    { id: "rival",            nome: "Caldwell Rival 78",        img: "weapons/shotguns shells/rival 78.png", tamanho: 4, preco: 82,  desbloqueio: 6,  raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Flechette","Penny Shot Ammo","Slug"], variantes: ["rival_sho","rival_trau","rival_mace"] },
+    { id: "rival_sho",        nome: "Rival 78 Shorty",          img: "weapons/shotguns shells/rival 78 shorty.png", tamanho: 2, preco: 145, desbloqueio: 6,  raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Flechette","Penny Shot Ammo","Slug"], variantes: [] },
+    { id: "rival_trau",       nome: "Rival 78 Trauma",          img: "weapons/shotguns shells/rival 78 trauma.png", tamanho: 4, preco: 180, desbloqueio: 6,  raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Flechette","Penny Shot Ammo","Slug"], variantes: [] },
+    { id: "rival_mace",       nome: "Rival 78 Mace",            img: "weapons/shotguns shells/rival 78 mace.png", tamanho: 2, preco: 155, desbloqueio: 6,  raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Flechette","Penny Shot Ammo","Slug"], variantes: [] },
+    { id: "specter",          nome: "Specter 1882",             img: "weapons/shotguns shells/specter 1882.png", tamanho: 4, preco: 147, desbloqueio: 14, raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Flechette","Penny Shot Ammo","Slug"], variantes: ["specter_sho","specter_bay"] },
+    { id: "specter_sho",      nome: "Specter 1882 Shorty",      img: "weapons/shotguns shells/specter 1882 shorty.png", tamanho: 2, preco: 164, desbloqueio: 14, raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Flechette","Penny Shot Ammo","Slug"], variantes: [] },
+    { id: "specter_bay",      nome: "Specter 1882 Bayonet",     img: "weapons/shotguns shells/specter 1882 bayonet.png", tamanho: 4, preco: 198, desbloqueio: 14, raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Flechette","Penny Shot Ammo","Slug"], variantes: [] },
+    { id: "terminus",         nome: "Terminus",                 img: "weapons/shotguns shells/terminus.png", tamanho: 4, preco: 166, desbloqueio: 24, raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Flechette","Penny Shot Ammo","Slug"], variantes: ["terminus_sho"] },
+    { id: "terminus_sho",     nome: "Terminus Shorty",          img: "weapons/shotguns shells/terminus shorty.png", tamanho: 2, preco: 148, desbloqueio: 24, raro: false, municao: "shell", municoes: ["Standard","Dragon Breath","Flechette","Penny Shot Ammo","Slug"], variantes: [] },
+    { id: "slate",            nome: "Slate",                    img: "weapons/shotguns shells/slate.png", tamanho: 4, preco: 238, desbloqueio: 30, raro: false, municao: "shell", municoes: ["Standard","Penny Shot Ammo","Slug"], variantes: ["slate_rip"] },
+    { id: "slate_rip",        nome: "Slate Riposte",            img: "weapons/shotguns shells/slate riposte.png", tamanho: 4, preco: 323, desbloqueio: 30, raro: false, municao: "shell", municoes: ["Standard","Penny Shot Ammo","Slug"], variantes: [] },
+    { id: "crown",            nome: "Crown & King Auto-5",      img: "weapons/shotguns shells/auto-5.png", tamanho: 5, preco: 265, desbloqueio: 40, raro: false, municao: "shell", municoes: ["Standard","Flechette","Penny Shot Ammo","Slug"], variantes: [] },
+    // ----- SPECIAL WEAPONS -----
+    { id: "crossbow",         nome: "Crossbow",                 img: "weapons/special ammo/crossbow.png", tamanho: 4, preco: 147, desbloqueio: 15, raro: false, municao: "bolt", municoes: ["Standard","Explosive Bolt","Shot Bolt","Steel Bolt"], variantes: ["crossbow_dead"] },
+    { id: "crossbow_dead",    nome: "Crossbow Deadeye",         img: "weapons/special ammo/crossbow deadeye.png", tamanho: 4, preco: 53,  desbloqueio: 15, raro: false, municao: "bolt", municoes: ["Standard","Explosive Bolt","Shot Bolt","Steel Bolt"], variantes: [] },
+    { id: "bow",              nome: "Hunting Bow",              img: "weapons/special ammo/hunting bow.png", tamanho: 3, preco: 140, desbloqueio: 17, raro: false, municao: "arrow", municoes: ["Standard","Concertina Arrows","Frag Arrows","Poison Arrows"], variantes: [] },
+    { id: "bomblance",        nome: "Bomb Lance",               img: "weapons/special ammo/bomb lance.png", tamanho: 3, preco: 182, desbloqueio: 19, raro: false, municao: "lance", municoes: ["Standard","Dragon Breath Charge","Harpoon","Steel Ball Ammo","Waxed Frag Charge"], variantes: [] },
+    { id: "avtomat",          nome: "Mosin-Nagant Avtomat",     img: "weapons/special long ammo/mosin-nagant avtomat.png", tamanho: 5, preco: 744, desbloqueio: 1,  raro: true,  municao: "speciallong", municoes: ["Standard","Incendiary Ammo","Spitzer Ammo"], variantes: [] },
+    { id: "nitro",            nome: "Nitro Express Rifle",      img: "weapons/special ammo/nitro express.png", tamanho: 5, preco: 1048, desbloqueio: 1, raro: true, municao: "nitro", municoes: ["Standard","Explosive Ammo","Shredder Ammo"], variantes: [] },
+    { id: "bomblauncher",     nome: "Bomb Launcher",            img: "weapons/special ammo/bomb launcher.png", tamanho: 2, preco: 640, desbloqueio: 1,  raro: true,  municao: "lance", municoes: ["Standard","Dragon Breath Charge","Harpoon","Steel Ball Ammo","Waxed Frag Charge"], variantes: [] },
+    { id: "shredder",         nome: "Shredder",                 img: "weapons/special ammo/shredder.png", tamanho: 4, preco: 500, desbloqueio: 1,  raro: true,  municao: "shredder", municoes: ["Standard"], variantes: [] },
+
+    // ----- PISTOLS -----
+    { id: "conversion",       nome: "Caldwell Conversion",      img: "weapons/compacto ammo/conversion.png", tamanho: 1, preco: 47, desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","FMJ Ammo"], variantes: ["conversion_chain"] },
+    { id: "conversion_chain", nome: "Conversion Chain Pistol",  img: "weapons/compacto ammo/conversion chain pistol.png", tamanho: 1, preco: 84, desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","FMJ Ammo"], variantes: [] },
+    { id: "nagant",           nome: "Nagant M1895",             img: "weapons/compacto ammo/nagant m1895.png", tamanho: 1, preco: 52, desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: ["nagant_prec","nagant_sil","nagant_dead"] },
+    { id: "nagant_prec",      nome: "Nagant M1895 Precision",   img: "weapons/compacto ammo/nagant m1895 precision.png", tamanho: 2, preco: 29, desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "nagant_sil",       nome: "Nagant M1895 Silencer",    img: "weapons/compacto ammo/nagant m1895 silencer.png", tamanho: 1, preco: 27, desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "nagant_dead",      nome: "Nagant M1895 Deadeye",     img: "weapons/compacto ammo/nagant m1895 deadeye.png", tamanho: 2, preco: 30, desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "officer",          nome: "Nagant M1895 Officer",     img: "weapons/compacto ammo/officer.png", tamanho: 1, preco: 79, desbloqueio: 7,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: ["officer_braw","officer_carb","officer_carb_dead"] },
+    { id: "officer_braw",     nome: "Officer Brawler",          img: "weapons/compacto ammo/officer brawler.png", tamanho: 1, preco: 106, desbloqueio: 7,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "officer_carb",     nome: "Officer Carbine",          img: "weapons/compacto ammo/officer carbine.png", tamanho: 3, preco: 183, desbloqueio: 7,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "officer_carb_dead", nome: "Officer Carbine Deadeye", img: "weapons/compacto ammo/officer carbine deadeye.png", tamanho: 3, preco: 192, desbloqueio: 7,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","High Velocity Ammo","Poison Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "scottfield",       nome: "Scottfield",               img: "weapons/medium ammo/scottfield.png", tamanho: 1, preco: 66, desbloqueio: 5,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo"], variantes: ["scottfield_brawl","scottfield_spit","scottfield_prec","scottfield_swif"] },
+    { id: "scottfield_brawl", nome: "Scottfield Brawler",       img: "weapons/medium ammo/scottfield brawler.png", tamanho: 1, preco: 87, desbloqueio: 5,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo"], variantes: [] },
+    { id: "scottfield_spit",  nome: "Scottfield Spitfire",      img: "weapons/medium ammo/scottfield spitfire.png", tamanho: 1, preco: 108, desbloqueio: 5,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo"], variantes: [] },
+    { id: "scottfield_prec",  nome: "Scottfield Precision",     img: "weapons/medium ammo/scottfield precision.png", tamanho: 2, preco: 85, desbloqueio: 5,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo"], variantes: [] },
+    { id: "scottfield_swif",  nome: "Scottfield Swift",         img: "weapons/medium ammo/scottfield swift.png", tamanho: 1, preco: 95, desbloqueio: 5,  raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo"], variantes: [] },
+    { id: "pax",              nome: "Caldwell Pax",             img: "weapons/medium ammo/pax.png", tamanho: 1, preco: 84, desbloqueio: 12, raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo"], variantes: ["pax_claw","pax_true"] },
+    { id: "pax_claw",         nome: "Pax Claw",                 img: "weapons/medium ammo/pax claw.png", tamanho: 1, preco: 90, desbloqueio: 12, raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo"], variantes: [] },
+    { id: "pax_true",         nome: "Pax Trueshot",             img: "weapons/medium ammo/pax trueshot.png", tamanho: 1, preco: 141, desbloqueio: 12, raro: false, municao: "medium", municoes: ["Standard","Dumdum Ammo","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo"], variantes: [] },
+    { id: "uppercut",         nome: "Caldwell Uppercut",        img: "weapons/long ammo/uppercut.png", tamanho: 2, preco: 147, desbloqueio: 22, raro: false, municao: "long", municoes: ["Standard","Explosive Ammo","FMJ Ammo","Incendiary Ammo"], variantes: ["uppercut_prec","uppercut_dead"] },
+    { id: "uppercut_prec",    nome: "Uppercut Precision",       img: "weapons/long ammo/uppercut precision.png", tamanho: 3, preco: 321, desbloqueio: 22, raro: false, municao: "long", municoes: ["Standard","Explosive Ammo","FMJ Ammo","Incendiary Ammo"], variantes: [] },
+    { id: "uppercut_dead",    nome: "Uppercut Deadeye",         img: "weapons/long ammo/uppercut deadeye.png", tamanho: 3, preco: 337, desbloqueio: 22, raro: false, municao: "long", municoes: ["Standard","Explosive Ammo","FMJ Ammo","Incendiary Ammo"], variantes: [] },
+    { id: "lemat",            nome: "LeMat",                    img: "weapons/compacto ammo/lemat.png", tamanho: 1, preco: 91, desbloqueio: 18, raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Dragon Breath","Slug","Starshell"], variantes: ["lemat_carb","lemat_carb_mark"] },
+    { id: "lemat_carb",       nome: "LeMat Carbine",            img: "weapons/compacto ammo/lemat carbine.png", tamanho: 3, preco: 115, desbloqueio: 18, raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Dragon Breath","Slug","Starshell"], variantes: [] },
+    { id: "lemat_carb_mark",  nome: "LeMat Carbine Marksman",   img: "weapons/compacto ammo/lemat carbine marksman.png", tamanho: 3, preco: 127, desbloqueio: 18, raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","Incendiary Ammo","Dragon Breath","Slug","Starshell"], variantes: [] },
+    { id: "bornheim",         nome: "Bornheim",                 img: "weapons/compacto ammo/bornheim.png", tamanho: 1, preco: 84, desbloqueio: 11, raro: false, municao: "compact", municoes: ["Standard","High Velocity Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: ["bornheim_match","bornheim_sil","bornheim_ext"] },
+    { id: "bornheim_match",   nome: "Bornheim No. 3 Match",     img: "weapons/compacto ammo/bornheim match.png", tamanho: 2, preco: 180, desbloqueio: 11, raro: false, municao: "compact", municoes: ["Standard","High Velocity Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "bornheim_sil",     nome: "Bornheim No. 3 Silencer",  img: "weapons/compacto ammo/bornheim silencer.png", tamanho: 1, preco: 174, desbloqueio: 11, raro: false, municao: "compact", municoes: ["Standard","High Velocity Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "bornheim_ext",     nome: "Bornheim No. 3 Extended",  img: "weapons/compacto ammo/bornheim extended.png", tamanho: 1, preco: 203, desbloqueio: 11, raro: false, municao: "compact", municoes: ["Standard","High Velocity Ammo","Incendiary Ammo","Subsonic Ammo"], variantes: [] },
+    { id: "dolch",            nome: "Dolch 96",                 img: "weapons/special ammo/dolch 96.png", tamanho: 2, preco: 226, desbloqueio: 34, raro: false, municao: "dolch", municoes: ["Standard","Dumdum Ammo"], variantes: ["dolch_claw","dolch_bull","dolch_prec"] },
+    { id: "dolch_claw",       nome: "Dolch 96 Claw",            img: "weapons/special ammo/dolch 96 claw.png", tamanho: 2, preco: 700, desbloqueio: 34, raro: false, municao: "dolch", municoes: ["Standard","Dumdum Ammo"], variantes: [] },
+    { id: "dolch_bull",       nome: "Dolch 96 Bullseye",        img: "weapons/special ammo/dolch 96 bullseye.png", tamanho: 2, preco: 725, desbloqueio: 34, raro: false, municao: "dolch", municoes: ["Standard","Dumdum Ammo"], variantes: [] },
+    { id: "dolch_prec",       nome: "Dolch 96 Precision",       img: "weapons/special ammo/dolch 96 precision.png", tamanho: 3, preco: 730, desbloqueio: 34, raro: false, municao: "dolch", municoes: ["Standard","Dumdum Ammo"], variantes: [] },
+    { id: "frontier",         nome: "Frontier 73C",             img: "weapons/compacto ammo/frontier 73c.png", tamanho: 3, preco: 89, desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","FMJ Ammo","High Velocity Ammo","Incendiary Ammo","Poison Ammo","Subsonic Ammo"], variantes: ["winfield_sil","winfield_mark"] },
+    { id: "newarmy",          nome: "New Army",                 img: "weapons/compacto ammo/new army.png", tamanho: 1, preco: 72, desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","FMJ Ammo"], variantes: ["newarmy_swif"] },
+    { id: "newarmy_swif",     nome: "New Army Swift",           img: "weapons/compacto ammo/new army swift.png", tamanho: 1, preco: 108, desbloqueio: 1,  raro: false, municao: "compact", municoes: ["Standard","Dumdum Ammo","FMJ Ammo"], variantes: [] },
+
+    // ----- MELEE WEAPONS (slots de armas) -----
+    { id: "saber",            nome: "Cavalry Saber",            img: "weapons/melee weapons/cavalry saber.png", tamanho: 1, preco: 50, desbloqueio: 3, raro: false, municoes: [], variantes: [] },
+    { id: "machete",          nome: "Machete",                  img: "weapons/melee weapons/machete.png", tamanho: 1, preco: 30, desbloqueio: 2, raro: false, municoes: [], variantes: [] },
+    { id: "axe",              nome: "Combat Axe",               img: "weapons/melee weapons/combat axe.png", tamanho: 2, preco: 40, desbloqueio: 4, raro: false, municoes: [], variantes: [] },
+    { id: "katana",           nome: "Katana",                   img: "weapons/melee weapons/katana.png", tamanho: 2, preco: 115, desbloqueio: 25, raro: false, municoes: [], variantes: [] },
+    { id: "bat",              nome: "Baseball Bat",             img: "weapons/melee weapons/baseball bat.png", tamanho: 1, preco: 40, desbloqueio: 1, raro: false, municoes: [], variantes: [] },
+    { id: "hammer",           nome: "Railroad Hammer",          img: "weapons/melee weapons/railroad hammer.png", tamanho: 2, preco: 45, desbloqueio: 6, raro: false, municoes: [], variantes: [] }
+  ],
+
+  ferramentas: [
+    { id: "medkit",        nome: "Med Kit",                 img: "tools/healing/med kit.png", preco: 25, desbloqueio: 1,  tipo: "medkit" },
+    { id: "derringer",     nome: "Quad Derringer",          img: "tools/Pocket pistols/quad derringer.png", preco: 55, desbloqueio: 13, tipo: "outro" },
+    { id: "vitriol",       nome: "Vitriol Antidote Shot",   img: "consumables/antidote shot.png", preco: 20, desbloqueio: 1,  tipo: "outro" },
+    { id: "choke",         nome: "Choke Bomb",              img: "tools/Others/choke bomb.png", preco: 22, desbloqueio: 1,  tipo: "outro" },
+    { id: "flaregun",      nome: "Flare Gun",               img: "tools/fire light/flare gun.png", preco: 25, desbloqueio: 1,  tipo: "outro" },
+    { id: "decoys",        nome: "Decoys",                  img: "tools/distraction/decoys.png", preco: 15, desbloqueio: 1,  tipo: "outro" },
+    { id: "convtrip",      nome: "Concertina Tripwire",     img: "tools/Traps/concertina tripwire.png", preco: 30, desbloqueio: 5,  tipo: "outro" },
+    { id: "alerttrip",     nome: "Alert Tripwire",          img: "tools/Traps/alert tripwire.png", preco: 20, desbloqueio: 3,  tipo: "outro" },
+    { id: "poisontrip",    nome: "Poison Tripwire",         img: "tools/Traps/poison tripwire.png", preco: 25, desbloqueio: 7,  tipo: "outro" },
+    { id: "beartrap",      nome: "Bear Trap",               img: "tools/Traps/bear traps.png", preco: 30, desbloqueio: 4,  tipo: "outro" },
+    { id: "toolbox",       nome: "Toolbox",                 img: "consumables/toolbox.png", preco: 40, desbloqueio: 9,  tipo: "outro" },
+    { id: "beetle",        nome: "Spider Beetle",           img: "tools/Others/spider beetle.png", preco: 30, desbloqueio: 12, tipo: "outro" },
+    { id: "spyglass",      nome: "Spyglass",                img: "tools/Others/spyglass.png", preco: 15, desbloqueio: 1,  tipo: "outro" },
+    { id: "fusee",         nome: "Fusees",                  img: "tools/fire light/fusees.png", preco: 20, desbloqueio: 1,  tipo: "outro" },
+    { id: "knife",         nome: "Combat Knife",            img: "tools/melee/combat knife.png", preco: 40, desbloqueio: 1,  tipo: "melee" },
+    { id: "heavyknife",    nome: "Heavy Knife",             img: "tools/melee/heavy knife.png", preco: 40, desbloqueio: 1,  tipo: "melee" },
+    { id: "dusters",       nome: "Knuckle Dusters",         img: "tools/melee/knuckle dusters.png", preco: 23, desbloqueio: 1,  tipo: "melee" },
+    { id: "knuckleknife",  nome: "Knuckle Knife",           img: "tools/melee/knuckle knife.png", preco: 40, desbloqueio: 1,  tipo: "melee" },
+    { id: "throwingaxe",   nome: "Throwing Axe",            img: "tools/throwable melee/throwing axe.png", preco: 55, desbloqueio: 20, tipo: "melee" },
+    { id: "throwingknife", nome: "Throwing Knives",         img: "tools/throwable melee/throwing knives.png", preco: 55, desbloqueio: 1,  tipo: "melee" },
+    { id: "spear",         nome: "Throwing Spear",          img: "tools/throwable melee/throwing spear.png", preco: 55, desbloqueio: 1,  tipo: "melee" }
+  ],
+
+  consumiveis: [
+    { id: "dynamite",       nome: "Dynamite",            img: "consumables/dynamite.png", preco: 25, desbloqueio: 1,  tipo: "explosivo" },
+    { id: "fragbomb",       nome: "Frag Bomb",           img: "consumables/frag bomb.png", preco: 50, desbloqueio: 14, tipo: "explosivo" },
+    { id: "stickybomb",     nome: "Sticky Bomb",         img: "consumables/sticky bomb.png", preco: 38, desbloqueio: 10, tipo: "explosivo" },
+    { id: "hivebomb",       nome: "Hive Bomb",           img: "consumables/hive bomb.png", preco: 25, desbloqueio: 8,  tipo: "explosivo" },
+    { id: "firebomb",       nome: "Firebomb",            img: "consumables/firebomb.png", preco: 25, desbloqueio: 6,  tipo: "explosivo" },
+    { id: "flashbomb",      nome: "Flash Bomb",          img: "consumables/flash bomb.png", preco: 30, desbloqueio: 4,  tipo: "explosivo" },
+    { id: "poisonbomb",     nome: "Poison Bomb",         img: "consumables/poison bomb.png", preco: 30, desbloqueio: 11, tipo: "explosivo" },
+    { id: "concertina",     nome: "Concertina Bomb",     img: "consumables/concertina bomb.png", preco: 35, desbloqueio: 13, tipo: "explosivo" },
+    { id: "decoyfuse",      nome: "Decoy Fuses",         img: "tools/distraction/decoy fuses.png", preco: 15, desbloqueio: 2,  tipo: "outro" },
+    { id: "blankfire",      nome: "Blank Fire Decoys",   img: "tools/distraction/blank fire decoys.png", preco: 15, desbloqueio: 3,  tipo: "outro" },
+    { id: "vitriolshot",    nome: "Antidote Shot",       img: "consumables/antidote shot.png", preco: 25, desbloqueio: 5,  tipo: "cura" },
+    { id: "regen",          nome: "Regeneration Shot",   img: "consumables/regeneration shot.png", preco: 45, desbloqueio: 9,  tipo: "cura" }
+  ]
+};
+
+window.HUNT_MUNICOES = {
+  compact: {
+    "Standard": "Ammo_Compact.png",
+    "Dumdum Ammo": "Ammo_Compact_Dumdum.png",
+    "Explosive Ammo": "Ammo_Compact_Explosive.png",
+    "FMJ Ammo": "Ammo_Compact_Full_Metal_Jacket.png",
+    "High Velocity Ammo": "Ammo_Compact_High_Velocity.png",
+    "Incendiary Ammo": "Ammo_Compact_Incendiary.png",
+    "Poison Ammo": "Ammo_Compact_Poison.png",
+    "Spitzer Ammo": "Ammo_Compact_Spitzer.png",
+    "Starshell": "Ammo_Compact_Starshell.png",
+    "Subsonic Ammo": "Ammo_Compact_Subsonic.png"
+  },
+  medium: {
+    "Standard": "Ammo_Medium.png",
+    "Dumdum Ammo": "Ammo_Medium_Dumdum.png",
+    "Explosive Ammo": "Ammo_Medium_Explosive.png",
+    "FMJ Ammo": "Ammo_Medium_Full_Metal_Jacket.png",
+    "High Velocity Ammo": "Ammo_Medium_High_Velocity.png",
+    "Incendiary Ammo": "Ammo_Medium_Incendiary.png",
+    "Poison Ammo": "Ammo_Medium_Poison.png",
+    "Spitzer Ammo": "Ammo_Medium_Spitzer.png",
+    "Subsonic Ammo": "Ammo_Medium_Subsonic.png"
+  },
+  long: {
+    "Standard": "Ammo_Long.png",
+    "Explosive Ammo": "Ammo_Long_Explosive.png",
+    "FMJ Ammo": "Ammo_Long_Full_Metal_Jacket.png",
+    "High Velocity Ammo": "Ammo_Long_High_Velocity.png",
+    "Incendiary Ammo": "Ammo_Long_Incendiary.png",
+    "Poison Ammo": "Ammo_Long_Poison.png",
+    "Subsonic Ammo": "Ammo_Long_Subsonic.png"
+  },
+  speciallong: {
+    "Standard": "Ammo_Special_Long.png",
+    "Dumdum Ammo": "Ammo_Special_Long_Dumdum.png",
+    "Explosive Ammo": "Ammo_Special_Long_Explosive.png",
+    "FMJ Ammo": "Ammo_Special_Long_Full_Metal_Jacket.png",
+    "High Velocity Ammo": "Ammo_Special_Long_High_Velocity.png",
+    "Incendiary Ammo": "Ammo_Special_Long_Incendiary.png",
+    "Poison Ammo": "Ammo_Special_Long_Poison.png",
+    "Spitzer Ammo": "Ammo_Special_Long_Spitzer.png",
+    "Subsonic Ammo": "Ammo_Special_Long_Subsonic.png"
+  },
+  shell: {
+    "Standard": "Ammo_Shell.png",
+    "Dragon Breath": "Ammo_Shell_Dragon_Breath.png",
+    "Flechette": "Ammo_Shell_Flechette.png",
+    "Penny Shot Ammo": "Ammo_Shell_Penny_Shot.png",
+    "Slug": "Ammo_Shell_Slug.png",
+    "Starshell": "Ammo_Shell_Starshell.png"
+  },
+  nitro: {
+    "Standard": "Ammo_Nitro.png",
+    "Explosive Ammo": "Ammo_Nitro_Explosive.png",
+    "FMJ Ammo": "Ammo_Nitro_Full_Metal_Jacket.png",
+    "High Velocity Ammo": "Ammo_Nitro_High_Velocity.png",
+    "Incendiary Ammo": "Ammo_Nitro_Incendiary.png",
+    "Poison Ammo": "Ammo_Nitro_Poison.png",
+    "Shredder Ammo": "Ammo_Nitro_Shredder.png",
+    "Spitzer Ammo": "Ammo_Nitro_Spitzer.png",
+    "Subsonic Ammo": "Ammo_Nitro_Subsonic.png"
+  },
+  dolch: {
+    "Standard": "Ammo_Dolch.png",
+    "Dumdum Ammo": "Ammo_Dolch_Dumdum.png",
+    "Explosive Ammo": "Ammo_Dolch_Explosive.png",
+    "FMJ Ammo": "Ammo_Dolch_Full_Metal_Jacket.png",
+    "High Velocity Ammo": "Ammo_Dolch_High_Velocity.png",
+    "Incendiary Ammo": "Ammo_Dolch_Incendiary.png",
+    "Poison Ammo": "Ammo_Dolch_Poison.png",
+    "Spitzer Ammo": "Ammo_Dolch_Spitzer.png",
+    "Starshell": "Ammo_Dolch_Starshell.png",
+    "Subsonic Ammo": "Ammo_Dolch_Subsonic.png"
+  },
+  bolt: {
+    "Standard": "Ammo_Bolt.png",
+    "Explosive Bolt": "Ammo_Bolt_Explosive.png",
+    "Shot Bolt": "Ammo_Bolt_Shot.png",
+    "Steel Bolt": "Ammo_Bolt_Steel.png"
+  },
+  arrow: {
+    "Standard": "Ammo_Arrow.png",
+    "Concertina Arrows": "Ammo_Arrow_Concertina.png",
+    "Frag Arrows": "Ammo_Arrow_Frag.png",
+    "Poison Arrows": "Ammo_Arrow_Poison.png"
+  },
+  lance: {
+    "Standard": "Ammo_Lance.png",
+    "Dragon Breath Charge": "Ammo_Lance_Dragon_Breath.png",
+    "Harpoon": "Ammo_Lance_Harpoon.png",
+    "Steel Ball Ammo": "Ammo_Lance_Steel_Ball.png",
+    "Waxed Frag Charge": "Ammo_Lance_Waxed_Frag.png"
+  },
+  shredder: {
+    "Standard": "Ammo_Shredder.png"
+  }
+};

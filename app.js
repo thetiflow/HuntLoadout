@@ -1,0 +1,640 @@
+(function () {
+  "use strict";
+
+  var D = window.HUNT_DATA;
+  var ESTADO = {
+    opcoes: {
+      dual: false,
+      duplicados: false,
+      muniCustom: false,
+      soArmas: false,
+      soBase: false,
+      raras: false,
+      quartermaster: false,
+      forcaMedkit: true,
+      forcaMeleeTools: false,
+      rank: 1,
+      limitePreco: 1200
+    },
+    slots: [],
+    trancados: {},
+    animando: false,
+    boostArma: false,
+    boostAplicado: false
+  };
+
+  var TIPOS_SLOT = {
+    armaFlexivel: { etiqueta: "Weapon", tipo: "arma", slotArma: "qualquer" },
+    ferramenta: { etiqueta: "Tool", tipo: "ferramenta" },
+    consumivel: { etiqueta: "Consumable", tipo: "consumivel" }
+  };
+
+  function capacidadeTotal() {
+    return ESTADO.opcoes.quartermaster ? 6 : 5;
+  }
+
+  function construirSlots() {
+    var slots = [];
+    slots.push(criarSlot("armaFlexivel", "Weapon 1"));
+    slots.push(criarSlot("armaFlexivel", "Weapon 2"));
+    if (!ESTADO.opcoes.soArmas) {
+      for (var i = 1; i <= 4; i++) slots.push(criarSlot("ferramenta", "Tool " + i));
+      for (var j = 1; j <= 4; j++) slots.push(criarSlot("consumivel", "Consumable " + j));
+    }
+    return slots;
+  }
+
+  function criarSlot(tipo, nome) {
+    return { tipo: tipo, nome: nome, item: null, municao: null };
+  }
+
+  function ehBase(itemId) {
+    var base = true;
+    for (var i = 0; i < D.armas.length; i++) {
+      if (D.armas[i].variantes.indexOf(itemId) !== -1) { base = false; break; }
+    }
+    return base;
+  }
+
+  function armasMelee() {
+    return D.armas.filter(function (a) { return a.municoes && a.municoes.length === 0; });
+  }
+
+  function ehMelee(item) {
+    return item && ((item.municoes && item.municoes.length === 0) || item.tipo === "melee");
+  }
+
+  function poolDisponivel(tipo) {
+    var pool;
+    if (tipo === "arma") {
+      pool = D.armas.slice();
+      if (!ESTADO.opcoes.raras) pool = pool.filter(function (a) { return !a.raro; });
+      if (ESTADO.opcoes.soBase) pool = pool.filter(function (a) { return ehBase(a.id); });
+    } else if (tipo === "ferramenta") {
+      pool = D.ferramentas.slice();
+    } else {
+      pool = D.consumiveis.slice();
+    }
+    pool = pool.filter(function (a) { return a.desbloqueio <= ESTADO.opcoes.rank; });
+    return pool;
+  }
+
+  function custoAtual() {
+    var total = 0;
+    ESTADO.slots.forEach(function (s) { if (s.item) total += s.item.preco; });
+    return total;
+  }
+
+  function menorPrecoPool(pool) {
+    var min = Infinity;
+    pool.forEach(function (a) { if (a.preco < min) min = a.preco; });
+    return min === Infinity ? 0 : min;
+  }
+
+  function orcamentoPorSlot(indice, ignorar) {
+    var usado = 0;
+    ESTADO.slots.forEach(function (s, i) {
+      if (i === ignorar) return;
+      if (s.item) usado += s.item.preco;
+    });
+    var qtd = { ferramenta: 0, consumivel: 0 };
+    for (var i = indice + 1; i < ESTADO.slots.length; i++) {
+      var s = ESTADO.slots[i];
+      if (!s || s.item) continue;
+      var cfg = TIPOS_SLOT[s.tipo];
+      if (cfg && cfg.tipo !== "arma") qtd[cfg.tipo]++;
+    }
+    var reserva = 0;
+    ["ferramenta", "consumivel"].forEach(function (tipo) {
+      if (!qtd[tipo]) return;
+      var excl = idsExcluirComLimites(!ESTADO.opcoes.forcaMedkit);
+      var p = poolDisponivel(tipo).filter(function (a) { return excl.indexOf(a.id) === -1; });
+      p.sort(function (a, b) { return a.preco - b.preco; });
+      for (var k = 0; k < Math.min(qtd[tipo], p.length); k++) reserva += p[k].preco;
+    });
+    return ESTADO.opcoes.limitePreco - usado - reserva;
+  }
+
+  function escolherItem(pool, ignorarIds, orcamento) {
+    var elegiveis = pool.filter(function (a) {
+      if (ignorarIds.indexOf(a.id) !== -1) return false;
+      if (orcamento !== null && orcamento !== undefined && a.preco > orcamento) return false;
+      return true;
+    });
+    if (!elegiveis.length) return null;
+    return elegiveis[Math.floor(Math.random() * elegiveis.length)];
+  }
+
+  function escolherMunicao(item) {
+    if (!item || !item.municoes || !item.municoes.length) return null;
+    if (ESTADO.opcoes.muniCustom) {
+      return item.municoes.indexOf("Standard") !== -1 ? "Standard" : item.municoes[0];
+    }
+    return item.municoes[Math.floor(Math.random() * item.municoes.length)];
+  }
+
+  function idsUsadosFC() {
+    var ids = [];
+    ESTADO.slots.forEach(function (s) {
+      if ((s.tipo === "ferramenta" || s.tipo === "consumivel") && s.item) ids.push(s.item.id);
+    });
+    return ids;
+  }
+
+  function poolCapacidade(pool, indice) {
+    var soma = 0;
+    ESTADO.slots.forEach(function (s, i) {
+      if (i !== indice && s.item && TIPOS_SLOT[s.tipo].tipo === "arma") soma += (s.item.tamanho || 1);
+    });
+    var restante = capacidadeTotal() - soma;
+    if (restante <= 0) return [];
+    return pool.filter(function (a) { return (a.tamanho || 1) <= restante; });
+  }
+
+  function idsExcluirFC(permitirMelee, permitirMedkit) {
+    var ids = idsUsadosFC();
+    if (!permitirMelee) {
+      armasMelee().forEach(function (m) { if (ids.indexOf(m.id) === -1) ids.push(m.id); });
+    }
+    if (!permitirMedkit) {
+      var mk = pegarPorId("medkit", "ferramentas");
+      if (mk && ids.indexOf(mk.id) === -1) ids.push(mk.id);
+    }
+    return ids;
+  }
+
+  function idsExcluirComLimites(permitirMedkit) {
+    var ids = [];
+    var contagem = {};
+    var nExplosivos = 0;
+    ESTADO.slots.forEach(function (s) {
+      if ((s.tipo === "ferramenta" || s.tipo === "consumivel") && s.item) {
+        if (!contagem[s.item.id]) contagem[s.item.id] = 0;
+        contagem[s.item.id]++;
+        if (s.tipo === "consumivel" && s.item.tipo === "explosivo") nExplosivos++;
+      }
+    });
+    armasMelee().forEach(function (m) { if (ids.indexOf(m.id) === -1) ids.push(m.id); });
+    D.ferramentas.forEach(function (f) {
+      if (f.tipo === "melee" && (contagem[f.id] || 0) >= 1 && ids.indexOf(f.id) === -1) ids.push(f.id);
+    });
+    if ((contagem["spyglass"] || 0) >= 1 && ids.indexOf("spyglass") === -1) ids.push("spyglass");
+    if ((contagem["beartrap"] || 0) >= 1 && ids.indexOf("beartrap") === -1) ids.push("beartrap");
+    if (nExplosivos >= 2) {
+      D.consumiveis.forEach(function (c) {
+        if (c.tipo === "explosivo" && ids.indexOf(c.id) === -1) ids.push(c.id);
+      });
+    }
+    if (ESTADO.opcoes.forcaMeleeTools) {
+      D.ferramentas.forEach(function (f) {
+        if (f.tipo === "melee" && ids.indexOf(f.id) === -1) ids.push(f.id);
+      });
+    }
+    if (!permitirMedkit) {
+      var mk = pegarPorId("medkit", "ferramentas");
+      if (mk && ids.indexOf(mk.id) === -1) ids.push(mk.id);
+    }
+    return ids;
+  }
+
+  function idsExcluirSemDuplicados(permitirMedkit) {
+    var ids = idsUsadosFC();
+    idsExcluirComLimites(permitirMedkit).forEach(function (id) {
+      if (ids.indexOf(id) === -1) ids.push(id);
+    });
+    return ids;
+  }
+
+  function poolSemFiltro(tipo) {
+    var pool;
+    if (tipo === "ferramenta") {
+      pool = D.ferramentas.slice();
+    } else {
+      pool = D.consumiveis.slice();
+    }
+    pool = pool.filter(function (a) { return a.desbloqueio <= ESTADO.opcoes.rank; });
+    return pool;
+  }
+
+  function gerarSlot(slot, posFerramenta) {
+    var cfg = TIPOS_SLOT[slot.tipo];
+    var tipo = cfg.tipo;
+    if (tipo === "arma") {
+      var indice = ESTADO.slots.indexOf(slot);
+      var pool = poolDisponivel("arma");
+      pool = poolCapacidade(pool, indice);
+      if (!ESTADO.opcoes.duplicados) {
+        var usados = [];
+        ESTADO.slots.forEach(function (s) { if (s.item && TIPOS_SLOT[s.tipo].tipo === "arma") usados.push(s.item.id); });
+        pool = pool.filter(function (a) { return usados.indexOf(a.id) === -1; });
+      }
+      var orc = orcamentoPorSlot(ESTADO.slots.indexOf(slot));
+      if (ESTADO.boostArma && !ESTADO.boostAplicado) {
+        var alvos = [pegarPorId("katana", "armas"), pegarPorId("saber", "armas")];
+        if (alvos[0] && alvos[1] && Math.random() < 0.5) { var tmp = alvos[0]; alvos[0] = alvos[1]; alvos[1] = tmp; }
+        for (var b = 0; b < alvos.length; b++) {
+          var alvo = alvos[b];
+          if (!alvo || pool.indexOf(alvo) === -1) continue;
+          if (orc !== null && orc !== undefined && alvo.preco > orc) continue;
+          slot.item = alvo;
+          slot.municao = escolherMunicao(alvo);
+          ESTADO.boostAplicado = true;
+          break;
+        }
+      }
+      if (!slot.item) {
+        slot.item = escolherItem(pool, [], orc);
+        slot.municao = escolherMunicao(slot.item);
+      }
+    } else {
+      var p2 = poolDisponivel(tipo);
+      var orc2 = orcamentoPorSlot(ESTADO.slots.indexOf(slot));
+      if (tipo === "ferramenta" && ESTADO.opcoes.forcaMedkit && posFerramenta === 1) {
+        var mk = pegarPorId("medkit", "ferramentas");
+        if (mk && mk.preco <= orc2) slot.item = mk;
+        else slot.item = escolherItem(p2, idsExcluirFC(false, true), orc2);
+        if (!slot.item) slot.item = escolherItem(poolSemFiltro(tipo), idsExcluirFC(false, true), orc2);
+      } else if (tipo === "ferramenta" && ESTADO.opcoes.forcaMeleeTools && posFerramenta === 0) {
+        var soMelee = p2.filter(ehMelee);
+        var exclMelee = idsExcluirFC(true, !ESTADO.opcoes.forcaMedkit);
+        if (soMelee.length) slot.item = escolherItem(soMelee, exclMelee, orc2);
+        else slot.item = escolherItem(p2, exclMelee, orc2);
+        if (!slot.item) {
+          var soMeleeTotal = poolSemFiltro(tipo).filter(ehMelee);
+          if (soMeleeTotal.length) slot.item = escolherItem(soMeleeTotal, exclMelee, orc2);
+          else slot.item = escolherItem(poolSemFiltro(tipo), exclMelee, orc2);
+        }
+      } else {
+        var permitirMedkit = !ESTADO.opcoes.forcaMedkit;
+        var exclSemDup = idsExcluirSemDuplicados(permitirMedkit);
+        slot.item = escolherItem(p2, exclSemDup, orc2);
+        if (!slot.item) slot.item = escolherItem(poolSemFiltro(tipo), exclSemDup, orc2);
+        if (!slot.item) {
+          var exclRep = idsExcluirComLimites(permitirMedkit);
+          slot.item = escolherItem(p2, exclRep, orc2);
+          if (!slot.item) slot.item = escolherItem(poolSemFiltro(tipo), exclRep, orc2);
+        }
+      }
+    }
+  }
+
+  function temItem(id) {
+    var found = false;
+    ESTADO.slots.forEach(function (s) { if (s.item && s.item.id === id) found = true; });
+    return found;
+  }
+
+  function pegarPorId(id, grupo) {
+    var lista = D[grupo];
+    for (var i = 0; i < lista.length; i++) if (lista[i].id === id) return lista[i];
+    return null;
+  }
+
+  function gerarTudo() {
+    if (ESTADO.animando) return;
+    ESTADO.animando = true;
+    bloquearControles(true);
+    ESTADO.slots = construirSlots();
+    ESTADO.trancados = {};
+    ESTADO.boostArma = ESTADO.opcoes.rank >= 30 && ESTADO.opcoes.limitePreco >= 100 && Math.random() < 0.2;
+    ESTADO.boostAplicado = false;
+    var posFerramenta = 0;
+    ESTADO.slots.forEach(function (s) {
+      gerarSlot(s, posFerramenta);
+      if (TIPOS_SLOT[s.tipo].tipo === "ferramenta") posFerramenta++;
+    });
+    renderizar();
+    if (window.HUNT_NO_ANIM) {
+      bloquearControles(false);
+      ESTADO.animando = false;
+      return;
+    }
+    animarReveal(function () {
+      bloquearControles(false);
+      ESTADO.animando = false;
+    });
+  }
+
+  function posFerramentaDoIndice(indice) {
+    var pos = 0;
+    for (var i = 0; i < indice; i++) {
+      if (ESTADO.slots[i] && TIPOS_SLOT[ESTADO.slots[i].tipo].tipo === "ferramenta") pos++;
+    }
+    return pos;
+  }
+
+  function rerolar(indice) {
+    if (ESTADO.animando) return;
+    var s = ESTADO.slots[indice];
+    if (!s) return;
+    var cfg = TIPOS_SLOT[s.tipo];
+    var pool = poolDisponivel(cfg.tipo);
+    var orc = orcamentoPorSlot(indice, indice);
+    var novo = null;
+    if (cfg.tipo === "arma") {
+      pool = poolCapacidade(pool, indice);
+      if (!ESTADO.opcoes.duplicados) {
+        var usados = [];
+        ESTADO.slots.forEach(function (x, i) {
+          if (i !== indice && x.item && TIPOS_SLOT[x.tipo].tipo === "arma") usados.push(x.item.id);
+        });
+        pool = pool.filter(function (a) { return usados.indexOf(a.id) === -1; });
+      }
+      novo = escolherItem(pool, [], orc);
+    } else if (cfg.tipo === "ferramenta" && ESTADO.opcoes.forcaMedkit && posFerramentaDoIndice(indice) === 1) {
+      var mk2 = pegarPorId("medkit", "ferramentas");
+      if (mk2 && mk2.preco <= orc) novo = mk2;
+      else novo = escolherItem(pool, idsExcluirFC(false, true), orc);
+      if (!novo) novo = escolherItem(poolSemFiltro("ferramenta"), idsExcluirFC(false, true), orc);
+    } else if (cfg.tipo === "ferramenta" && ESTADO.opcoes.forcaMeleeTools && posFerramentaDoIndice(indice) === 0) {
+      var soMelee = pool.filter(ehMelee);
+      if (soMelee.length) novo = escolherItem(soMelee, idsExcluirFC(true, !ESTADO.opcoes.forcaMedkit), orc);
+      else novo = escolherItem(pool, idsExcluirFC(true, !ESTADO.opcoes.forcaMedkit), orc);
+    } else {
+      var permitirMedkit = !ESTADO.opcoes.forcaMedkit;
+      novo = escolherItem(pool, idsExcluirSemDuplicados(permitirMedkit), orc);
+      if (!novo) novo = escolherItem(pool, idsExcluirComLimites(permitirMedkit), orc);
+    }
+    if (novo) {
+      s.item = novo;
+      s.municao = escolherMunicao(novo);
+    }
+    renderizar();
+    if (window.HUNT_NO_ANIM) return;
+    var div = divDoSlot(indice);
+    if (!div) return;
+    var ov = criarOverlay(s);
+    div.appendChild(ov);
+    setTimeout(function () { landOverlay(ov); }, 800);
+  }
+
+  function bloquearControles(ativo) {
+    var btn = document.getElementById("btn-gerar");
+    if (btn) btn.disabled = ativo;
+    if (ativo) document.body.classList.add("animando");
+    else document.body.classList.remove("animando");
+  }
+
+  function nomesReel(s) {
+    var cfg = TIPOS_SLOT[s.tipo];
+    var lista = cfg.tipo === "arma" ? D.armas : cfg.tipo === "ferramenta" ? D.ferramentas : D.consumiveis;
+    var nomes = [];
+    lista.forEach(function (a) { if (a.desbloqueio <= ESTADO.opcoes.rank) nomes.push(a.nome); });
+    return nomes;
+  }
+
+  function criarOverlay(s) {
+    var ov = document.createElement("div");
+    ov.className = "reel-overlay";
+    var strip = document.createElement("div");
+    strip.className = "reel-strip";
+    ov.appendChild(strip);
+    var nomes = nomesReel(s);
+    function prox() {
+      if (nomes.length) strip.textContent = nomes[Math.floor(Math.random() * nomes.length)];
+      strip.style.transform = "translateY(14px)";
+      void ov.offsetWidth;
+      strip.style.transform = "translateY(0)";
+    }
+    strip.textContent = nomes.length ? nomes[0] : "…";
+    prox();
+    ov._timer = setInterval(prox, 90);
+    return ov;
+  }
+
+  function landOverlay(ov) {
+    if (ov._timer) clearInterval(ov._timer);
+    ov.style.pointerEvents = "none";
+    ov.classList.add("aterrar");
+    setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 280);
+  }
+
+  function divDoSlot(indice) {
+    var divs = document.querySelectorAll("#slots-armas .slot, #slots-fc .slot");
+    return divs[indice] || null;
+  }
+
+  function animarReveal(fim) {
+    var divs = document.querySelectorAll("#slots-armas .slot, #slots-fc .slot");
+    var reels = [];
+    Array.prototype.forEach.call(divs, function (div, i) {
+      var ov = criarOverlay(ESTADO.slots[i]);
+      div.appendChild(ov);
+      reels.push(ov);
+    });
+    var n = reels.length;
+    var duracaoTotal = 6000;
+    var inicio = 400;
+    var step = n > 1 ? (duracaoTotal - inicio) / (n - 1) : 0;
+    reels.forEach(function (ov, k) {
+      setTimeout(function () { landOverlay(ov); }, Math.round(inicio + step * k));
+    });
+    setTimeout(fim, duracaoTotal + 300);
+  }
+
+  function alternarTranca(indice) {
+    var s = ESTADO.slots[indice];
+    if (!s) return;
+    if (ESTADO.trancados[indice]) delete ESTADO.trancados[indice];
+    else ESTADO.trancados[indice] = true;
+    renderizar();
+  }
+
+  function itemPorId(id, tipo) {
+    var grupos = tipo === "arma" ? [D.armas] : tipo === "ferramenta" ? [D.ferramentas] : [D.consumiveis];
+    for (var g = 0; g < grupos.length; g++) {
+      for (var i = 0; i < grupos[g].length; i++) {
+        if (grupos[g][i].id === id) return grupos[g][i];
+      }
+    }
+    return null;
+  }
+
+  function variantesExistentes(slot) {
+    if (!slot || !TIPOS_SLOT[slot.tipo] || TIPOS_SLOT[slot.tipo].tipo !== "arma" || !slot.item || !slot.item.variantes) return [];
+    return slot.item.variantes.filter(function (vid) { return itemPorId(vid, "arma") !== null; });
+  }
+
+  function renderizar() {
+    var painelArmas = document.getElementById("slots-armas");
+    var painelFC = document.getElementById("slots-fc");
+    var grupoArmas = document.getElementById("grupo-armas");
+    var grupoFC = document.getElementById("grupo-fc");
+    painelArmas.innerHTML = "";
+    painelFC.innerHTML = "";
+    var total = 0;
+
+    ESTADO.slots.forEach(function (s, i) {
+      total += s.item ? s.item.preco : 0;
+      var div = document.createElement("div");
+      div.className = "slot" + (ESTADO.trancados[i] ? " trancado" : "");
+      var municoesVisiveis = (s.item && s.item.municoes && s.item.municoes.length && TIPOS_SLOT[s.tipo] && TIPOS_SLOT[s.tipo].tipo === "arma")
+        ? (ESTADO.opcoes.muniCustom ? s.item.municoes.filter(function (m) { return m === "Standard"; }) : s.item.municoes.slice())
+        : [];
+      div.innerHTML =
+        '<div class="slot-corpo">' +
+          (s.item
+            ? (s.item.img
+                ? '<img class="slot-img" src="img/' + s.item.img + '" alt="' + s.item.nome + '" title="' + s.item.nome + ' · $' + s.item.preco + '">'
+                : '<div class="slot-simbolo">' + simbolo(s.item) + "</div>" +
+                  '<div class="slot-fallback">' + s.item.nome + "</div>")
+            : '<div class="slot-vazio">—</div>') +
+        "</div>" +
+        (s.item && s.item.img ? '<div class="slot-nome">' + s.item.nome + "</div>" : "") +
+        (s.item && s.municao ? '<div class="slot-municao-nome" title="Selected ammo">' + s.municao + "</div>" : "") +
+        (municoesVisiveis.length
+          ? '<div class="slot-municoes">' + municoesVisiveis.map(function (m) {
+              var im = imagemMunicao(s.item, m);
+              if (!im) return "";
+              var ativa = s.municao === m ? " ativa" : "";
+              return '<img class="municao-img' + ativa + '" src="img/municoes/' + im + '" alt="' + m + '" title="' + m + '">';
+            }).join("") + "</div>"
+          : "") +
+        '<div class="slot-botoes">' +
+          '<button class="btn-dado" title="Reroll">🎲</button>' +
+        "</div>";
+
+      div.querySelector(".btn-dado").addEventListener("click", function () { rerolar(i); });
+
+      var imgsMun = div.querySelectorAll(".municao-img");
+      for (var k = 0; k < imgsMun.length; k++) {
+        imgsMun[k].addEventListener("click", (function (slot, nome) {
+          return function () {
+            slot.municao = nome;
+            renderizar();
+          };
+        })(s, imgsMun[k].getAttribute("alt")));
+      }
+
+      if (TIPOS_SLOT[s.tipo] && TIPOS_SLOT[s.tipo].tipo === "arma") painelArmas.appendChild(div);
+      else painelFC.appendChild(div);
+    });
+
+    grupoArmas.style.display = "";
+    grupoFC.style.display = ESTADO.opcoes.soArmas ? "none" : "";
+
+    document.getElementById("total").textContent = "$" + total;
+
+    var custo = document.getElementById("custo");
+    if (total > ESTADO.opcoes.limitePreco) {
+      custo.className = "custo acima";
+      custo.textContent = "Over limit!";
+    } else {
+      custo.className = "custo";
+      custo.textContent = "hunt dollars";
+    }
+  }
+
+  function simbolo(item) {
+    if (!item.municoes || !item.municoes.length) return "🔪";
+    return "🔫";
+  }
+
+  function imagemMunicao(item, nomeMunicao) {
+    if (!window.HUNT_MUNICOES) return "";
+    var familia = item.municao || "compact";
+    if (nomeMunicao === "Dragon Breath" || nomeMunicao === "Flechette" ||
+        nomeMunicao === "Penny Shot Ammo" || nomeMunicao === "Slug" || nomeMunicao === "Starshell") {
+      familia = "shell";
+    }
+    if (nomeMunicao === "Explosive Bolt" || nomeMunicao === "Shot Bolt" || nomeMunicao === "Steel Bolt") {
+      familia = "bolt";
+    }
+    if (nomeMunicao === "Concertina Arrows" || nomeMunicao === "Frag Arrows" || nomeMunicao === "Poison Arrows") {
+      familia = "arrow";
+    }
+    if (nomeMunicao === "Dragon Breath Charge" || nomeMunicao === "Harpoon" ||
+        nomeMunicao === "Steel Ball Ammo" || nomeMunicao === "Waxed Frag Charge") {
+      familia = "lance";
+    }
+    var mapa = window.HUNT_MUNICOES[familia];
+    return mapa ? (mapa[nomeMunicao] || "") : "";
+  }
+
+  function mostrarVariantes(indice) {
+    var s = ESTADO.slots[indice];
+    var variantes = variantesExistentes(s);
+    if (!variantes.length) return;
+    var lista = document.getElementById("variantes-lista");
+    lista.innerHTML = "";
+    variantes.forEach(function (vid) {
+      var v = itemPorId(vid, "arma");
+      if (!v) return;
+      var li = document.createElement("button");
+      li.className = "variante";
+      li.innerHTML = (v.img ? '<img src="img/' + v.img + '">' : "") + "<span>" + v.nome + " · $" + v.preco + "</span>";
+      li.addEventListener("click", function () {
+        s.item = v;
+        if (!v.municoes || v.municoes.indexOf(s.municao) === -1) s.municao = escolherMunicao(v);
+        fecharModal("variantes-modal");
+        renderizar();
+      });
+      lista.appendChild(li);
+    });
+    document.getElementById("variantes-modal").style.display = "flex";
+  }
+
+  function fecharModal(id) {
+    document.getElementById(id).style.display = "none";
+  }
+
+  function ligarOpcoes() {
+    var mapa = {
+      "op-muni": "muniCustom",
+      "op-sobase": "soBase",
+      "op-medkit": "forcaMedkit",
+      "op-melee-tools": "forcaMeleeTools",
+      "op-qm": "quartermaster"
+    };
+    Object.keys(mapa).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("change", function () {
+        ESTADO.opcoes[mapa[id]] = el.checked;
+        if (id === "op-qm") { gerarTudo(); return; }
+        if (id === "op-muni") {
+          ESTADO.slots.forEach(function (s) {
+            if (s.item && TIPOS_SLOT[s.tipo] && TIPOS_SLOT[s.tipo].tipo === "arma" && s.municao) {
+              s.municao = escolherMunicao(s.item);
+            }
+          });
+        }
+        renderizar();
+      });
+    });
+
+    var rank = document.getElementById("op-rank");
+    rank.addEventListener("change", function () {
+      var v = parseInt(rank.value, 10);
+      if (isNaN(v) || v < 1) v = 1;
+      if (v > 100) v = 100;
+      rank.value = v;
+      ESTADO.opcoes.rank = v;
+      renderizar();
+    });
+
+    var preco = document.getElementById("op-preco");
+    preco.addEventListener("change", function () {
+      var v = parseInt(preco.value, 10);
+      if (isNaN(v) || v < 0) v = 0;
+      if (v > 4000) v = 4000;
+      preco.value = v;
+      ESTADO.opcoes.limitePreco = v;
+      renderizar();
+    });
+
+    document.getElementById("btn-gerar").addEventListener("click", gerarTudo);
+    document.getElementById("btn-fechar-variantes").addEventListener("click", function () { fecharModal("variantes-modal"); });
+
+    var btnSettings = document.getElementById("btn-settings");
+    var painelSettings = document.getElementById("settings-painel");
+    btnSettings.addEventListener("click", function () {
+      painelSettings.hidden = !painelSettings.hidden;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    ligarOpcoes();
+    gerarTudo();
+  });
+})();
