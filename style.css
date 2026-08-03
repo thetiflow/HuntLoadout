@@ -27,7 +27,22 @@ body {
   padding: 20px 16px;
 }
 
-.topo-conteudo { max-width: 1000px; margin: 0 auto; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.topo-conteudo {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.topo-logo {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  justify-self: start;
+  min-width: 0;
+}
 
 .logo {
   font-size: 14px;
@@ -41,16 +56,19 @@ body {
 .subtitulo b { color: var(--creme); }
 
 .topo-update {
-  margin-left: auto;
+  justify-self: center;
+  text-align: center;
   color: var(--cinza);
   font-size: 11px;
   letter-spacing: 0.5px;
+  line-height: 1.4;
 }
 
 .topo-social {
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-self: end;
 }
 
 .topo-social a {
@@ -66,6 +84,13 @@ body {
 .topo-social svg {
   width: 20px;
   height: 20px;
+}
+
+@media (max-width: 700px) {
+  .topo-conteudo { grid-template-columns: 1fr; justify-items: start; }
+  .topo-logo { justify-self: start; }
+  .topo-update { justify-self: start; text-align: left; }
+  .topo-social { justify-self: end; }
 }
 
 .container {
