@@ -33,7 +33,7 @@
   D.armas.forEach(function (a) { if (RE_DUPLA.test(a.id)) a.dupla = true; });
 
   var PESOS_MUNICAO = {
-    shell: { preferidos: ["Standard", "Slug"], chancePreferidos: 0.7 }
+    shell: { preferidos: ["Standard", "Slug"], chancePreferidos: 0.6 }
   };
 
   var NOMES_LOADOUT = [
