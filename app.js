@@ -29,6 +29,13 @@
     consumivel: { etiqueta: "Consumable", tipo: "consumivel" }
   };
 
+  var RE_DUPLA = /^(springfield|martini|sparks|berthier|romero|crossbow|bomblance|bomblauncher|nitro|lemat)/;
+  D.armas.forEach(function (a) { if (RE_DUPLA.test(a.id)) a.dupla = true; });
+
+  var PESOS_MUNICAO = {
+    shell: { preferidos: ["Standard", "Slug"], chancePreferidos: 0.7 }
+  };
+
   var NOMES_LOADOUT = [
     "The Iron Promise", "Sinner's Bargain", "Bury Them Quiet", "The Long Night",
     "Gunpowder Psalm", "Mud & Blood", "Last Candle", "The Bounty Road",
@@ -203,7 +210,7 @@
   }
 
   function criarSlot(tipo, nome) {
-    return { tipo: tipo, nome: nome, item: null, municao: null };
+    return { tipo: tipo, nome: nome, item: null, municao: null, municao2: null };
   }
 
   function ehBase(itemId) {
@@ -283,12 +290,83 @@
     return elegiveis[Math.floor(Math.random() * elegiveis.length)];
   }
 
-  function escolherMunicao(item) {
+  function escolherMunicaoPonderada(item, excluir) {
+    var opcoes = [];
+    if (!item || !item.municoes) return null;
+    item.municoes.forEach(function (m) {
+      if (excluir && excluir.indexOf(m) !== -1) return;
+      opcoes.push(m);
+    });
+    if (!opcoes.length) return null;
+    var config = PESOS_MUNICAO[familiaMunicao(item, opcoes[0])];
+    if (!config) {
+      return opcoes[Math.floor(Math.random() * opcoes.length)];
+    }
+    var preferidos = [];
+    var resto = [];
+    opcoes.forEach(function (m) {
+      if (config.preferidos.indexOf(m) !== -1) preferidos.push(m);
+      else resto.push(m);
+    });
+    if (preferidos.length && (Math.random() < config.chancePreferidos || !resto.length)) {
+      return preferidos[Math.floor(Math.random() * preferidos.length)];
+    }
+    return resto.length ? resto[Math.floor(Math.random() * resto.length)] : preferidos[0];
+  }
+
+  function escolherMunicaoUnica(item) {
     if (!item || !item.municoes || !item.municoes.length) return null;
     if (ESTADO.opcoes.muniCustom) {
       return item.municoes.indexOf("Standard") !== -1 ? "Standard" : item.municoes[0];
     }
-    return item.municoes[Math.floor(Math.random() * item.municoes.length)];
+    return escolherMunicaoPonderada(item, null);
+  }
+
+  function escolherMunicoes(item) {
+    if (!item || !item.municoes || !item.municoes.length) return [];
+    if (!item.dupla) return [escolherMunicaoUnica(item)];
+    var familias = municoesPorFamilia(item);
+    if (familias.length >= 2) {
+      var resultado = [];
+      familias.forEach(function (g) {
+        if (ESTADO.opcoes.muniCustom) {
+          if (g.indexOf("Standard") !== -1) resultado.push("Standard");
+        } else {
+          var sub = { municoes: g, municao: item.municao };
+          resultado.push(escolherMunicaoPonderada(sub, null));
+        }
+      });
+      return resultado;
+    }
+    var lista = item.municoes;
+    if (ESTADO.opcoes.muniCustom) {
+      return lista.indexOf("Standard") !== -1 ? ["Standard"] : [];
+    }
+    if (lista.length >= 2) {
+      var subItem = { municoes: lista, municao: item.municao };
+      var primeira = escolherMunicaoPonderada(subItem, null);
+      var segunda = escolherMunicaoPonderada(subItem, [primeira]);
+      return [primeira, segunda];
+    }
+    return lista.length ? [lista[0]] : [];
+  }
+
+  function aplicarMunicoes(slot, item) {
+    slot.item = item;
+    var sel = escolherMunicoes(item);
+    slot.municao = sel.length ? sel[0] : null;
+    slot.municao2 = sel.length > 1 ? sel[1] : null;
+    return slot;
+  }
+
+  function reconciliarMunicoes(slot, item) {
+    var sel = escolherMunicoes(item);
+    var atuais = [slot.municao, slot.municao2];
+    atuais.forEach(function (m, i) {
+      if (m && i < sel.length && sel.indexOf(m) === -1 && item.municoes.indexOf(m) !== -1) sel[i] = m;
+    });
+    slot.municao = sel.length ? sel[0] : null;
+    slot.municao2 = sel.length > 1 ? sel[1] : null;
   }
 
   function idsUsadosFC() {
@@ -394,15 +472,13 @@
           var alvo = alvos[b];
           if (!alvo || pool.indexOf(alvo) === -1) continue;
           if (orc !== null && orc !== undefined && alvo.preco > orc) continue;
-          slot.item = alvo;
-          slot.municao = escolherMunicao(alvo);
+          aplicarMunicoes(slot, alvo);
           ESTADO.boostAplicado = true;
           break;
         }
       }
       if (!slot.item) {
-        slot.item = escolherItem(pool, [], orc);
-        slot.municao = escolherMunicao(slot.item);
+        aplicarMunicoes(slot, escolherItem(pool, [], orc));
       }
     } else {
       var p2 = poolDisponivel(tipo);
@@ -518,8 +594,7 @@
       if (!novo) novo = escolherItem(pool, idsExcluirComLimites(permitirMedkit), orc);
     }
     if (novo) {
-      s.item = novo;
-      s.municao = escolherMunicao(novo);
+      aplicarMunicoes(s, novo);
     }
     renderizar();
     if (window.HUNT_NO_ANIM) return;
@@ -630,9 +705,15 @@
       total += s.item ? s.item.preco : 0;
       var div = document.createElement("div");
       div.className = "slot" + (ESTADO.trancados[i] ? " trancado" : "");
-      var municoesVisiveis = (s.item && s.item.municoes && s.item.municoes.length && TIPOS_SLOT[s.tipo] && TIPOS_SLOT[s.tipo].tipo === "arma")
+      var ehArma = TIPOS_SLOT[s.tipo] && TIPOS_SLOT[s.tipo].tipo === "arma";
+      var municoesVisiveis = (s.item && s.item.municoes && s.item.municoes.length && ehArma)
         ? (ESTADO.opcoes.muniCustom ? s.item.municoes.filter(function (m) { return m === "Standard"; }) : s.item.municoes.slice())
         : [];
+      var nomesSel = [];
+      if (ehArma && s.item) {
+        if (s.municao) nomesSel.push(s.municao);
+        if (s.municao2) nomesSel.push(s.municao2);
+      }
       div.innerHTML =
         '<div class="slot-corpo">' +
           (s.item
@@ -643,12 +724,12 @@
             : '<div class="slot-vazio">—</div>') +
         "</div>" +
         (s.item && s.item.img ? '<div class="slot-nome">' + s.item.nome + "</div>" : "") +
-        (s.item && s.municao ? '<div class="slot-municao-nome" title="Selected ammo">' + s.municao + "</div>" : "") +
+        (nomesSel.length ? '<div class="slot-municao-nome" title="Selected ammo">' + nomesSel.join(" + ") + "</div>" : "") +
         (municoesVisiveis.length
           ? '<div class="slot-municoes">' + municoesVisiveis.map(function (m) {
               var im = imagemMunicao(s.item, m);
               if (!im) return "";
-              var ativa = s.municao === m ? " ativa" : "";
+              var ativa = (s.municao === m || s.municao2 === m) ? " ativa" : "";
               return '<img class="municao-img' + ativa + '" src="img/municoes/' + im + '" alt="' + m + '" title="' + m + '">';
             }).join("") + "</div>"
           : "") +
@@ -662,7 +743,17 @@
       for (var k = 0; k < imgsMun.length; k++) {
         imgsMun[k].addEventListener("click", (function (slot, nome) {
           return function () {
-            slot.municao = nome;
+            if (!slot.item) return;
+            var famIdx = indiceFamilia(slot.item, nome);
+            if (slot.item.dupla) {
+              if (famIdx >= 1) {
+                slot.municao2 = nome;
+              } else if (slot.municao !== nome && slot.municao2 !== nome) {
+                slot.municao2 = nome;
+              }
+            } else {
+              slot.municao = nome;
+            }
             renderizar();
           };
         })(s, imgsMun[k].getAttribute("alt")));
@@ -692,23 +783,50 @@
     return "🔫";
   }
 
-  function imagemMunicao(item, nomeMunicao) {
-    if (!window.HUNT_MUNICOES) return "";
-    var familia = item.municao || "compact";
+  function familiaMunicao(item, nomeMunicao) {
     if (nomeMunicao === "Dragon Breath" || nomeMunicao === "Flechette" ||
         nomeMunicao === "Penny Shot Ammo" || nomeMunicao === "Slug" || nomeMunicao === "Starshell") {
-      familia = "shell";
+      return "shell";
     }
     if (nomeMunicao === "Explosive Bolt" || nomeMunicao === "Shot Bolt" || nomeMunicao === "Steel Bolt") {
-      familia = "bolt";
+      return "bolt";
     }
     if (nomeMunicao === "Concertina Arrows" || nomeMunicao === "Frag Arrows" || nomeMunicao === "Poison Arrows") {
-      familia = "arrow";
+      return "arrow";
     }
     if (nomeMunicao === "Dragon Breath Charge" || nomeMunicao === "Harpoon" ||
         nomeMunicao === "Steel Ball Ammo" || nomeMunicao === "Waxed Frag Charge") {
-      familia = "lance";
+      return "lance";
     }
+    return item.municao || "compact";
+  }
+
+  function municoesPorFamilia(item) {
+    var grupos = [];
+    var indice = {};
+    if (!item || !item.municoes) return grupos;
+    item.municoes.forEach(function (m) {
+      var fam = familiaMunicao(item, m);
+      if (indice[fam] === undefined) {
+        indice[fam] = grupos.length;
+        grupos.push([]);
+      }
+      grupos[indice[fam]].push(m);
+    });
+    return grupos;
+  }
+
+  function indiceFamilia(item, nomeMunicao) {
+    var grupos = municoesPorFamilia(item);
+    for (var i = 0; i < grupos.length; i++) {
+      if (grupos[i].indexOf(nomeMunicao) !== -1) return i;
+    }
+    return 0;
+  }
+
+  function imagemMunicao(item, nomeMunicao) {
+    if (!window.HUNT_MUNICOES) return "";
+    var familia = familiaMunicao(item, nomeMunicao);
     var mapa = window.HUNT_MUNICOES[familia];
     return mapa ? (mapa[nomeMunicao] || "") : "";
   }
@@ -727,7 +845,7 @@
       li.innerHTML = (v.img ? '<img src="img/' + v.img + '">' : "") + "<span>" + v.nome + " · $" + v.preco + "</span>";
       li.addEventListener("click", function () {
         s.item = v;
-        if (!v.municoes || v.municoes.indexOf(s.municao) === -1) s.municao = escolherMunicao(v);
+        reconciliarMunicoes(s, v);
         fecharModal("variantes-modal");
         renderizar();
       });
@@ -756,8 +874,8 @@
         if (id === "op-qm") { gerarTudo(); return; }
         if (id === "op-muni") {
           ESTADO.slots.forEach(function (s) {
-            if (s.item && TIPOS_SLOT[s.tipo] && TIPOS_SLOT[s.tipo].tipo === "arma" && s.municao) {
-              s.municao = escolherMunicao(s.item);
+            if (s.item && TIPOS_SLOT[s.tipo] && TIPOS_SLOT[s.tipo].tipo === "arma" && (s.municao || s.municao2)) {
+              aplicarMunicoes(s, s.item);
             }
           });
         }
