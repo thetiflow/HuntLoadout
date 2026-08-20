@@ -537,6 +537,7 @@
       gerarSlot(s, posFerramenta);
       if (TIPOS_SLOT[s.tipo].tipo === "ferramenta") posFerramenta++;
     });
+    preencherVaziosConsumiveis();
     renderizar();
     destinoAtualizar();
     tocarSelo();
@@ -545,6 +546,21 @@
       return;
     }
     animarReveal(finalizarGeracao);
+  }
+
+  function preencherVaziosConsumiveis() {
+    ESTADO.slots.forEach(function (s, i) {
+      if (s.item || TIPOS_SLOT[s.tipo].tipo !== "consumivel") return;
+      var pool = poolDisponivel("consumivel");
+      pool.sort(function (a, b) { return a.preco - b.preco; });
+      for (var k = 0; k < pool.length; k++) {
+        var orc = orcamentoPorSlot(i, i);
+        if (pool[k].preco <= orc) {
+          s.item = pool[k];
+          break;
+        }
+      }
+    });
   }
 
   function finalizarGeracao() {
@@ -592,6 +608,12 @@
       var permitirMedkit = !ESTADO.opcoes.forcaMedkit;
       novo = escolherItem(pool, idsExcluirSemDuplicados(permitirMedkit), orc);
       if (!novo) novo = escolherItem(pool, idsExcluirComLimites(permitirMedkit), orc);
+      if (!novo && cfg.tipo === "consumivel") {
+        pool.sort(function (a, b) { return a.preco - b.preco; });
+        for (var k = 0; k < pool.length; k++) {
+          if (pool[k].preco <= orc) { novo = pool[k]; break; }
+        }
+      }
     }
     if (novo) {
       aplicarMunicoes(s, novo);
