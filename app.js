@@ -12,21 +12,17 @@
       raras: false,
       quartermaster: false,
       forcaMedkit: true,
-      forcaMeleeTools: false,
       rank: 1,
       limitePreco: 1200
     },
     slots: [],
     trancados: {},
-    animando: false,
-    boostArma: false,
-    boostAplicado: false
+    animando: false
   };
 
   var TIPOS_SLOT = {
     armaFlexivel: { etiqueta: "Weapon", tipo: "arma", slotArma: "qualquer" },
-    ferramenta: { etiqueta: "Tool", tipo: "ferramenta" },
-    consumivel: { etiqueta: "Consumable", tipo: "consumivel" }
+    equipamento: { etiqueta: "Equipment", tipo: "equipamento" }
   };
 
   var RE_DUPLA = /^(springfield|martini|sparks|berthier|romero|crossbow|bomblance|bomblauncher|nitro|lemat)/;
@@ -203,8 +199,7 @@
     slots.push(criarSlot("armaFlexivel", "Weapon 1"));
     slots.push(criarSlot("armaFlexivel", "Weapon 2"));
     if (!ESTADO.opcoes.soArmas) {
-      for (var i = 1; i <= 4; i++) slots.push(criarSlot("ferramenta", "Tool " + i));
-      for (var j = 1; j <= 4; j++) slots.push(criarSlot("consumivel", "Consumable " + j));
+      for (var i = 1; i <= 6; i++) slots.push(criarSlot("equipamento", "Equipment " + i));
     }
     return slots;
   }
@@ -235,10 +230,10 @@
       pool = D.armas.slice();
       if (!ESTADO.opcoes.raras) pool = pool.filter(function (a) { return !a.raro; });
       if (ESTADO.opcoes.soBase) pool = pool.filter(function (a) { return ehBase(a.id); });
-    } else if (tipo === "ferramenta") {
-      pool = D.ferramentas.slice();
+    } else if (tipo === "equipamento") {
+      pool = D.ferramentas.concat(D.consumiveis).slice();
     } else {
-      pool = D.consumiveis.slice();
+      pool = D.ferramentas.concat(D.consumiveis).slice();
     }
     pool = pool.filter(function (a) { return a.desbloqueio <= ESTADO.opcoes.rank; });
     return pool;
@@ -357,7 +352,7 @@
   function idsUsadosFC() {
     var ids = [];
     ESTADO.slots.forEach(function (s) {
-      if ((s.tipo === "ferramenta" || s.tipo === "consumivel") && s.item) ids.push(s.item.id);
+      if (s.tipo === "equipamento" && s.item) ids.push(s.item.id);
     });
     return ids;
   }
@@ -389,10 +384,10 @@
     var contagem = {};
     var nExplosivos = 0;
     ESTADO.slots.forEach(function (s) {
-      if ((s.tipo === "ferramenta" || s.tipo === "consumivel") && s.item) {
+      if (s.tipo === "equipamento" && s.item) {
         if (!contagem[s.item.id]) contagem[s.item.id] = 0;
         contagem[s.item.id]++;
-        if (s.tipo === "consumivel" && s.item.tipo === "explosivo") nExplosivos++;
+        if (s.item.tipo === "explosivo") nExplosivos++;
       }
     });
     armasMelee().forEach(function (m) { if (ids.indexOf(m.id) === -1) ids.push(m.id); });
@@ -402,7 +397,7 @@
     if ((contagem["spyglass"] || 0) >= 1 && ids.indexOf("spyglass") === -1) ids.push("spyglass");
     if ((contagem["beartrap"] || 0) >= 1 && ids.indexOf("beartrap") === -1) ids.push("beartrap");
     if (nExplosivos >= 2) {
-      D.consumiveis.forEach(function (c) {
+      D.ferramentas.concat(D.consumiveis).forEach(function (c) {
         if (c.tipo === "explosivo" && ids.indexOf(c.id) === -1) ids.push(c.id);
       });
     }
@@ -427,17 +422,12 @@
   }
 
   function poolSemFiltro(tipo) {
-    var pool;
-    if (tipo === "ferramenta") {
-      pool = D.ferramentas.slice();
-    } else {
-      pool = D.consumiveis.slice();
-    }
+    var pool = D.ferramentas.concat(D.consumiveis).slice();
     pool = pool.filter(function (a) { return a.desbloqueio <= ESTADO.opcoes.rank; });
     return pool;
   }
 
-  function gerarSlot(slot, posFerramenta) {
+  function gerarSlot(slot, posEquipamento) {
     var cfg = TIPOS_SLOT[slot.tipo];
     var tipo = cfg.tipo;
     if (tipo === "arma") {
@@ -452,32 +442,37 @@
       var orc = orcamentoPorSlot(ESTADO.slots.indexOf(slot));
       aplicarMunicoes(slot, escolherItem(pool, [], orc));
     } else {
-      var p2 = poolDisponivel(tipo);
+      var p2 = poolDisponivel("equipamento");
       var orc2 = orcamentoPorSlot(ESTADO.slots.indexOf(slot));
-      if (tipo === "ferramenta" && ESTADO.opcoes.forcaMedkit && posFerramenta === 1) {
+      if (ESTADO.opcoes.forcaMedkit && posEquipamento === 1) {
         var mk = pegarPorId("medkit", "ferramentas");
         if (mk && mk.preco <= orc2) slot.item = mk;
-        else slot.item = escolherItem(p2, idsExcluirFC(false, true), orc2);
-        if (!slot.item) slot.item = escolherItem(poolSemFiltro(tipo), idsExcluirFC(false, true), orc2);
-      } else if (tipo === "ferramenta" && ESTADO.opcoes.forcaMeleeTools && posFerramenta === 0) {
-        var soMelee = p2.filter(ehMelee);
-        var exclMelee = idsExcluirFC(true, !ESTADO.opcoes.forcaMedkit);
-        if (soMelee.length) slot.item = escolherItem(soMelee, exclMelee, orc2);
-        else slot.item = escolherItem(p2, exclMelee, orc2);
-        if (!slot.item) {
-          var soMeleeTotal = poolSemFiltro(tipo).filter(ehMelee);
-          if (soMeleeTotal.length) slot.item = escolherItem(soMeleeTotal, exclMelee, orc2);
-          else slot.item = escolherItem(poolSemFiltro(tipo), exclMelee, orc2);
+        else {
+          var permitirMedkit = !ESTADO.opcoes.forcaMedkit;
+          var exclSemDup = idsExcluirSemDuplicados(permitirMedkit);
+          slot.item = escolherItem(p2, exclSemDup, orc2);
+          if (!slot.item) slot.item = escolherItem(poolSemFiltro("equipamento"), exclSemDup, orc2);
+          if (!slot.item) {
+            var exclRep = idsExcluirComLimites(permitirMedkit);
+            slot.item = escolherItem(p2, exclRep, orc2);
+            if (!slot.item) slot.item = escolherItem(poolSemFiltro("equipamento"), exclRep, orc2);
+          }
         }
       } else {
-        var permitirMedkit = !ESTADO.opcoes.forcaMedkit;
-        var exclSemDup = idsExcluirSemDuplicados(permitirMedkit);
-        slot.item = escolherItem(p2, exclSemDup, orc2);
-        if (!slot.item) slot.item = escolherItem(poolSemFiltro(tipo), exclSemDup, orc2);
+        var permitirMedkit2 = !ESTADO.opcoes.forcaMedkit;
+        var exclSemDup2 = idsExcluirSemDuplicados(permitirMedkit2);
+        slot.item = escolherItem(p2, exclSemDup2, orc2);
+        if (!slot.item) slot.item = escolherItem(poolSemFiltro("equipamento"), exclSemDup2, orc2);
         if (!slot.item) {
-          var exclRep = idsExcluirComLimites(permitirMedkit);
-          slot.item = escolherItem(p2, exclRep, orc2);
-          if (!slot.item) slot.item = escolherItem(poolSemFiltro(tipo), exclRep, orc2);
+          var exclRep2 = idsExcluirComLimites(permitirMedkit2);
+          slot.item = escolherItem(p2, exclRep2, orc2);
+          if (!slot.item) slot.item = escolherItem(poolSemFiltro("equipamento"), exclRep2, orc2);
+        }
+        if (!slot.item) {
+          p2.sort(function (a, b) { return a.preco - b.preco; });
+          for (var k = 0; k < p2.length; k++) {
+            if (p2[k].preco <= orc2) { slot.item = p2[k]; break; }
+          }
         }
       }
     }
@@ -501,14 +496,12 @@
     bloquearControles(true);
     ESTADO.slots = construirSlots();
     ESTADO.trancados = {};
-    ESTADO.boostArma = ESTADO.opcoes.rank >= 30 && ESTADO.opcoes.limitePreco >= 100 && Math.random() < 0.2;
-    ESTADO.boostAplicado = false;
-    var posFerramenta = 0;
+    var posEquipamento = 0;
     ESTADO.slots.forEach(function (s) {
-      gerarSlot(s, posFerramenta);
-      if (TIPOS_SLOT[s.tipo].tipo === "ferramenta") posFerramenta++;
+      gerarSlot(s, posEquipamento);
+      if (TIPOS_SLOT[s.tipo].tipo === "equipamento") posEquipamento++;
     });
-    preencherVaziosConsumiveis();
+    preencherVaziosEquipamento();
     renderizar();
     destinoAtualizar();
     tocarSelo();
@@ -519,10 +512,10 @@
     animarReveal(finalizarGeracao);
   }
 
-  function preencherVaziosConsumiveis() {
+  function preencherVaziosEquipamento() {
     ESTADO.slots.forEach(function (s, i) {
-      if (s.item || TIPOS_SLOT[s.tipo].tipo !== "consumivel") return;
-      var pool = poolDisponivel("consumivel");
+      if (s.item || TIPOS_SLOT[s.tipo].tipo !== "equipamento") return;
+      var pool = poolDisponivel("equipamento");
       pool.sort(function (a, b) { return a.preco - b.preco; });
       for (var k = 0; k < pool.length; k++) {
         var orc = orcamentoPorSlot(i, i);
@@ -540,10 +533,10 @@
     tocarRevelacao();
   }
 
-  function posFerramentaDoIndice(indice) {
+  function posEquipamentoDoIndice(indice) {
     var pos = 0;
     for (var i = 0; i < indice; i++) {
-      if (ESTADO.slots[i] && TIPOS_SLOT[ESTADO.slots[i].tipo].tipo === "ferramenta") pos++;
+      if (ESTADO.slots[i] && TIPOS_SLOT[ESTADO.slots[i].tipo].tipo === "equipamento") pos++;
     }
     return pos;
   }
@@ -566,20 +559,18 @@
         pool = pool.filter(function (a) { return usados.indexOf(a.id) === -1; });
       }
       novo = escolherItem(pool, [], orc);
-    } else if (cfg.tipo === "ferramenta" && ESTADO.opcoes.forcaMedkit && posFerramentaDoIndice(indice) === 1) {
+    } else if (ESTADO.opcoes.forcaMedkit && posEquipamentoDoIndice(indice) === 1) {
       var mk2 = pegarPorId("medkit", "ferramentas");
       if (mk2 && mk2.preco <= orc) novo = mk2;
-      else novo = escolherItem(pool, idsExcluirFC(false, true), orc);
-      if (!novo) novo = escolherItem(poolSemFiltro("ferramenta"), idsExcluirFC(false, true), orc);
-    } else if (cfg.tipo === "ferramenta" && ESTADO.opcoes.forcaMeleeTools && posFerramentaDoIndice(indice) === 0) {
-      var soMelee = pool.filter(ehMelee);
-      if (soMelee.length) novo = escolherItem(soMelee, idsExcluirFC(true, !ESTADO.opcoes.forcaMedkit), orc);
-      else novo = escolherItem(pool, idsExcluirFC(true, !ESTADO.opcoes.forcaMedkit), orc);
+      else {
+        novo = escolherItem(pool, idsExcluirSemDuplicados(!ESTADO.opcoes.forcaMedkit), orc);
+        if (!novo) novo = escolherItem(pool, idsExcluirComLimites(!ESTADO.opcoes.forcaMedkit), orc);
+      }
     } else {
       var permitirMedkit = !ESTADO.opcoes.forcaMedkit;
       novo = escolherItem(pool, idsExcluirSemDuplicados(permitirMedkit), orc);
       if (!novo) novo = escolherItem(pool, idsExcluirComLimites(permitirMedkit), orc);
-      if (!novo && cfg.tipo === "consumivel") {
+      if (!novo) {
         pool.sort(function (a, b) { return a.preco - b.preco; });
         for (var k = 0; k < pool.length; k++) {
           if (pool[k].preco <= orc) { novo = pool[k]; break; }
@@ -607,7 +598,9 @@
 
   function nomesReel(s) {
     var cfg = TIPOS_SLOT[s.tipo];
-    var lista = cfg.tipo === "arma" ? D.armas : cfg.tipo === "ferramenta" ? D.ferramentas : D.consumiveis;
+    var lista;
+    if (cfg.tipo === "arma") lista = D.armas;
+    else lista = D.ferramentas.concat(D.consumiveis);
     var nomes = [];
     lista.forEach(function (a) { if (a.desbloqueio <= ESTADO.opcoes.rank) nomes.push(a.nome); });
     return nomes;
@@ -671,7 +664,9 @@
   }
 
   function itemPorId(id, tipo) {
-    var grupos = tipo === "arma" ? [D.armas] : tipo === "ferramenta" ? [D.ferramentas] : [D.consumiveis];
+    var grupos;
+    if (tipo === "arma") grupos = [D.armas];
+    else grupos = [D.ferramentas, D.consumiveis];
     for (var g = 0; g < grupos.length; g++) {
       for (var i = 0; i < grupos[g].length; i++) {
         if (grupos[g][i].id === id) return grupos[g][i];
@@ -856,7 +851,6 @@
       "op-muni": "muniCustom",
       "op-sobase": "soBase",
       "op-medkit": "forcaMedkit",
-      "op-melee-tools": "forcaMeleeTools",
       "op-qm": "quartermaster"
     };
     Object.keys(mapa).forEach(function (id) {
