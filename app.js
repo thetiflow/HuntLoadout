@@ -367,18 +367,6 @@
     return pool.filter(function (a) { return (a.tamanho || 1) <= restante; });
   }
 
-  function idsExcluirFC(permitirMelee, permitirMedkit) {
-    var ids = idsUsadosFC();
-    if (!permitirMelee) {
-      armasMelee().forEach(function (m) { if (ids.indexOf(m.id) === -1) ids.push(m.id); });
-    }
-    if (!permitirMedkit) {
-      var mk = pegarPorId("medkit", "ferramentas");
-      if (mk && ids.indexOf(mk.id) === -1) ids.push(mk.id);
-    }
-    return ids;
-  }
-
   function idsExcluirComLimites(permitirMedkit) {
     var ids = [];
     var contagem = {};
@@ -399,11 +387,6 @@
     if (nExplosivos >= 2) {
       D.ferramentas.concat(D.consumiveis).forEach(function (c) {
         if (c.tipo === "explosivo" && ids.indexOf(c.id) === -1) ids.push(c.id);
-      });
-    }
-    if (ESTADO.opcoes.forcaMeleeTools) {
-      D.ferramentas.forEach(function (f) {
-        if (f.tipo === "melee" && ids.indexOf(f.id) === -1) ids.push(f.id);
       });
     }
     if (!permitirMedkit) {
