@@ -402,13 +402,15 @@ body.som-off .btn-som .som-icone.off { display: block; }
 
 .slots { display: grid; gap: 12px; }
 
-.slots-armas { grid-template-columns: repeat(2, 200px); justify-items: start; }
-.slots-armas .slot { width: 100%; max-width: 200px; }
+.slots-armas { grid-template-columns: repeat(2, 180px); justify-items: start; }
+.slots-armas .slot { width: 100%; max-width: 180px; }
 
-.slots-fc { grid-template-columns: repeat(4, 1fr); }
+.slots-fc { grid-template-columns: repeat(4, 180px); justify-items: start; }
+.slots-fc .slot { width: 180px; }
 
 @media (max-width: 900px) {
-  .slots-fc { grid-template-columns: repeat(4, 1fr); }
+  .slots-fc { grid-template-columns: repeat(4, 160px); }
+  .slots-fc .slot { width: 160px; }
 }
 
 @media (max-width: 600px) {
@@ -444,8 +446,7 @@ body.som-off .btn-som .som-icone.off { display: block; }
 }
 .slot:hover::after { left: 120%; }
 
-.slots-armas .slot { aspect-ratio: 1 / 1; }
-.slots-fc .slot { aspect-ratio: 1 / 1; }
+.slots-armas .slot, .slots-fc .slot { aspect-ratio: 1 / 1; }
 
 .slot-corpo {
   display: flex;
