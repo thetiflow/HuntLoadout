@@ -142,15 +142,14 @@ window.HUNT_DATA = {
 
   consumiveis: [
     { id: "vitalweak",      nome: "Vitality Shot (Weak)",     img: "consumables/antidote shot.png", preco: 30, desbloqueio: 1,  tipo: "cura" },
-    { id: "staminaweak",    nome: "Stamina Shot (Weak)",       img: "consumables/regeneration shot.png", preco: 30, desbloqueio: 1,  tipo: "cura" },
+    { id: "staminaweak",    nome: "Stamina Shot (Weak)",       img: "consumables/antidote shot.png", preco: 30, desbloqueio: 1,  tipo: "cura" },
     { id: "regenweak",      nome: "Regeneration Shot (Weak)",  img: "consumables/regeneration shot.png", preco: 30, desbloqueio: 1,  tipo: "cura" },
     { id: "ammobox",        nome: "Ammo Box",                  img: "consumables/ammo box.png", preco: 30, desbloqueio: 1,  tipo: "outro" },
-    { id: "medpack",        nome: "Medical Pack",              img: "consumables/regeneration shot.png", preco: 35, desbloqueio: 1,  tipo: "cura" },
     { id: "dynamite",       nome: "Dynamite Stick",            img: "consumables/dynamite.png", preco: 25, desbloqueio: 1,  tipo: "explosivo" },
     { id: "stickybomb",     nome: "Sticky Bomb",               img: "consumables/sticky bomb.png", preco: 38, desbloqueio: 1,  tipo: "explosivo" },
     { id: "firebomb",       nome: "Fire Bomb",                 img: "consumables/firebomb.png", preco: 25, desbloqueio: 1,  tipo: "explosivo" },
     { id: "vitalstrong",    nome: "Vitality Shot",             img: "consumables/antidote shot.png", preco: 85, desbloqueio: 7,  tipo: "cura" },
-    { id: "staminastrong",  nome: "Stamina Shot",              img: "consumables/regeneration shot.png", preco: 60, desbloqueio: 10, tipo: "cura" },
+    { id: "staminastrong",  nome: "Stamina Shot",              img: "consumables/antidote shot.png", preco: 60, desbloqueio: 10, tipo: "cura" },
     { id: "dynamitebundle", nome: "Dynamite Bundle",           img: "consumables/dynamite.png", preco: 40, desbloqueio: 15, tipo: "explosivo" },
     { id: "waxeddyn",       nome: "Waxed Dynamite Stick",      img: "consumables/dynamite.png", preco: 32, desbloqueio: 19, tipo: "explosivo" },
     { id: "regen",          nome: "Regeneration Shot",         img: "consumables/regeneration shot.png", preco: 45, desbloqueio: 13, tipo: "cura" },
