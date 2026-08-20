@@ -465,21 +465,7 @@
         pool = pool.filter(function (a) { return usados.indexOf(a.id) === -1; });
       }
       var orc = orcamentoPorSlot(ESTADO.slots.indexOf(slot));
-      if (ESTADO.boostArma && !ESTADO.boostAplicado) {
-        var alvos = [pegarPorId("katana", "armas"), pegarPorId("saber", "armas")];
-        if (alvos[0] && alvos[1] && Math.random() < 0.5) { var tmp = alvos[0]; alvos[0] = alvos[1]; alvos[1] = tmp; }
-        for (var b = 0; b < alvos.length; b++) {
-          var alvo = alvos[b];
-          if (!alvo || pool.indexOf(alvo) === -1) continue;
-          if (orc !== null && orc !== undefined && alvo.preco > orc) continue;
-          aplicarMunicoes(slot, alvo);
-          ESTADO.boostAplicado = true;
-          break;
-        }
-      }
-      if (!slot.item) {
-        aplicarMunicoes(slot, escolherItem(pool, [], orc));
-      }
+      aplicarMunicoes(slot, escolherItem(pool, [], orc));
     } else {
       var p2 = poolDisponivel(tipo);
       var orc2 = orcamentoPorSlot(ESTADO.slots.indexOf(slot));
