@@ -428,6 +428,8 @@ body.som-off .btn-som .som-icone.off { display: block; }
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  width: 180px;
+  height: 180px;
 }
 .slot:hover { border-color: var(--bordo); }
 .slot.trancado { border-color: var(--cinza); opacity: 0.75; }
@@ -455,11 +457,12 @@ body.som-off .btn-som .som-icone.off { display: block; }
   flex: 1;
   position: relative;
   min-height: 0;
+  overflow: hidden;
 }
 
 .slot-img {
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   display: block;
   border-radius: 6px;
