@@ -405,10 +405,10 @@ body.som-off .btn-som .som-icone.off { display: block; }
 .slots-armas { grid-template-columns: repeat(2, 200px); justify-items: start; }
 .slots-armas .slot { width: 100%; max-width: 200px; }
 
-.slots-fc { grid-template-columns: repeat(4, 1fr); max-width: 640px; }
+.slots-fc { grid-template-columns: repeat(4, 1fr); }
 
 @media (max-width: 900px) {
-  .slots-fc { grid-template-columns: repeat(2, 1fr); max-width: 340px; }
+  .slots-fc { grid-template-columns: repeat(4, 1fr); }
 }
 
 @media (max-width: 600px) {

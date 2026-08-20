@@ -199,7 +199,7 @@
     slots.push(criarSlot("armaFlexivel", "Weapon 1"));
     slots.push(criarSlot("armaFlexivel", "Weapon 2"));
     if (!ESTADO.opcoes.soArmas) {
-      for (var i = 1; i <= 6; i++) slots.push(criarSlot("equipamento", "Equipment " + i));
+      for (var i = 1; i <= 8; i++) slots.push(criarSlot("equipamento", "Equipment " + i));
     }
     return slots;
   }
