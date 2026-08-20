@@ -458,7 +458,6 @@
     if (tipo === "arma") {
       var indice = ESTADO.slots.indexOf(slot);
       var pool = poolDisponivel("arma");
-      pool = poolCapacidade(pool, indice);
       if (!ESTADO.opcoes.duplicados) {
         var usados = [];
         ESTADO.slots.forEach(function (s) { if (s.item && TIPOS_SLOT[s.tipo].tipo === "arma") usados.push(s.item.id); });
@@ -586,7 +585,6 @@
     var orc = orcamentoPorSlot(indice, indice);
     var novo = null;
     if (cfg.tipo === "arma") {
-      pool = poolCapacidade(pool, indice);
       if (!ESTADO.opcoes.duplicados) {
         var usados = [];
         ESTADO.slots.forEach(function (x, i) {
