@@ -262,22 +262,7 @@
       if (i === ignorar) return;
       if (s.item) usado += s.item.preco;
     });
-    var qtd = { ferramenta: 0, consumivel: 0 };
-    for (var i = indice + 1; i < ESTADO.slots.length; i++) {
-      var s = ESTADO.slots[i];
-      if (!s || s.item) continue;
-      var cfg = TIPOS_SLOT[s.tipo];
-      if (cfg && cfg.tipo !== "arma") qtd[cfg.tipo]++;
-    }
-    var reserva = 0;
-    ["ferramenta", "consumivel"].forEach(function (tipo) {
-      if (!qtd[tipo]) return;
-      var excl = idsExcluirComLimites(!ESTADO.opcoes.forcaMedkit);
-      var p = poolDisponivel(tipo).filter(function (a) { return excl.indexOf(a.id) === -1; });
-      p.sort(function (a, b) { return a.preco - b.preco; });
-      for (var k = 0; k < Math.min(qtd[tipo], p.length); k++) reserva += p[k].preco;
-    });
-    return ESTADO.opcoes.limitePreco - usado - reserva;
+    return ESTADO.opcoes.limitePreco - usado;
   }
 
   function escolherItem(pool, ignorarIds, orcamento) {
