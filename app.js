@@ -224,12 +224,16 @@
     return item && ((item.municoes && item.municoes.length === 0) || item.tipo === "melee");
   }
 
+  var RANK_MIN_VARIANTES = 30;
+
   function poolDisponivel(tipo) {
     var pool;
     if (tipo === "arma") {
       pool = D.armas.slice();
       if (!ESTADO.opcoes.raras) pool = pool.filter(function (a) { return !a.raro; });
-      if (ESTADO.opcoes.soBase) pool = pool.filter(function (a) { return ehBase(a.id); });
+      if (ESTADO.opcoes.soBase || ESTADO.opcoes.rank < RANK_MIN_VARIANTES) {
+        pool = pool.filter(function (a) { return ehBase(a.id); });
+      }
     } else if (tipo === "equipamento") {
       pool = D.ferramentas.concat(D.consumiveis).slice();
     } else {
@@ -854,12 +858,31 @@
     });
 
     var rank = document.getElementById("op-rank");
+    var sobaseEl = document.getElementById("op-sobase");
+
+    function atualizarSoBase() {
+      var r = parseInt(rank.value, 10);
+      if (isNaN(r) || r < 1) r = 1;
+      if (r > 100) r = 100;
+      var podeVariantes = r >= RANK_MIN_VARIANTES;
+      sobaseEl.disabled = !podeVariantes;
+      sobaseEl.closest("label").style.opacity = podeVariantes ? "1" : "0.4";
+      sobaseEl.closest("label").title = podeVariantes ? "" : "Variants unlock via weapon XP (available at rank " + RANK_MIN_VARIANTES + "+)";
+      if (!podeVariantes) {
+        sobaseEl.checked = true;
+        ESTADO.opcoes.soBase = true;
+      }
+    }
+
+    atualizarSoBase();
+
     rank.addEventListener("change", function () {
       var v = parseInt(rank.value, 10);
       if (isNaN(v) || v < 1) v = 1;
       if (v > 100) v = 100;
       rank.value = v;
       ESTADO.opcoes.rank = v;
+      atualizarSoBase();
       renderizar();
     });
 
