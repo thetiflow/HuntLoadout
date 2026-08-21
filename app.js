@@ -8,7 +8,7 @@
       duplicados: false,
       muniCustom: false,
       soArmas: false,
-      soBase: false,
+      soBase: true,
       raras: false,
       quartermaster: false,
       forcaMedkit: true,
